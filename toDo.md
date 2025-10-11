@@ -1,0 +1,4 @@
+- [ ] difine the structor of the project
+- [ ] create the client class
+- [ ] creat the main function
+- [ ] implement and read about pool
