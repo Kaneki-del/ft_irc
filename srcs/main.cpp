@@ -1,4 +1,5 @@
-// #include "../includes/Client.hpp"
+#include "../includes/Server.hpp"
+
 #include <iostream>
 
 int main(int argc, char *argv[]) {
@@ -8,10 +9,10 @@ int main(int argc, char *argv[]) {
     return 1;
   }
   try {
-    // TODO create the server class
-    // TODO pars the port and the password
-    //  Server irc_server(port, password);
-    //  irc_server.run();
+    const int port = atoi(argv[1]);
+    const std::string password = argv[2];
+    Server irc_server(port, password);
+    irc_server.run();
 
   } catch (const std::exception &e) {
     std::cerr << e.what() << std::endl;

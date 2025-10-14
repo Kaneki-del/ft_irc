@@ -3,7 +3,7 @@ CC        = c++
 CFLAGS    =  -Wall -Wextra -Werror -std=c++98 
 RM        = rm -rf
 
-SRCS_FILES      = main.cpp 
+SRCS_FILES      = main.cpp Server.cpp Client.cpp
 SRCS 		= $(addprefix srcs/, $(SRCS_FILES))
 
 OBJS      = $(SRCS:.cpp=.o)

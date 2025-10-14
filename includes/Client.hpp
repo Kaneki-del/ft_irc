@@ -12,6 +12,10 @@ public:
   std::string _nickname;
   std::string _username;
   void check_registration();
+  std::string &getReadBuffer();
+  void process_and_extract_commands();
+  std::string extractAndEraseFromBuffer(size_t pos_found);
+  // void setAdress(const &std::string A);
 
 private:
   int _fd;
@@ -20,5 +24,6 @@ private:
   bool _registered;
   bool _nick_set;
   bool _pass_set;
+  std::string _ip_address;
 };
 #endif
