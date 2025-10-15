@@ -15,6 +15,9 @@ public:
   std::string &getReadBuffer();
   void process_and_extract_commands();
   std::string extractAndEraseFromBuffer(size_t pos_found);
+  void send_reply(const std::string &numeric, const std::string &content);
+  bool is_registered();
+  std::string getNickname();
   // void setAdress(const &std::string A);
 
 private:

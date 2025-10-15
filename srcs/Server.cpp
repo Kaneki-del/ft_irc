@@ -1,7 +1,8 @@
 #include "../includes/Server.hpp"
 
 Server::Server(const int port, const std::string password)
-    : _password(password), _port(port), _listener_fd(-1) {
+    : _password(password), _port(port), _listener_fd(-1),
+      _server_name("ft_irc.local") {
   _listener_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
   if (_listener_fd < 0) {
@@ -72,6 +73,8 @@ void Server::handle_new_connection() {
 void Server::handle_client_command(const int current_fd) {
   // 1. Retrieve the Client object pointer
   Client *client = _clients[current_fd];
+  std::cerr << "[DEBUG] handle_client_command." << std::endl;
+
   if (!client) {
     // Handle case where client object is somehow missing (fatal error)
     return;
@@ -103,12 +106,29 @@ void Server::handle_client_command(const int current_fd) {
     // --- SUCCESS: Data was Read ---
     temp_buffer[bytes_read] = '\0';
     // This is the first half of the parsing solution: APPEND
-    client->getReadBuffer().append(temp_buffer, bytes_read);
+    std::string temp = client->getReadBuffer().append(temp_buffer, bytes_read);
+    std::cerr << "read return value with append: " << temp << std::endl;
     client->process_and_extract_commands();
   }
 }
 
-Server::commandDispatcher(Client *client, std::string commandLine) {}
+std::vector<std::string> split_string_to_vector(const std::string &input_string,
+                                                char delimiter) {
+  std::vector<std::string> tokens;
+  std::stringstream ss(input_string);
+  std::string segment;
+  while (std::getline(ss, segment, delimiter)) {
+    tokens.push_back(segment);
+  }
+  return tokens;
+}
+void Server::commandDispatcher(Client *client, std::string commandLine) {
+  std::vector<std::string> splitedCommand =
+      split_string_to_vector(commandLine, ' ');
+  if (splitedCommand.size() < 2)
+    client->send_reply("461", "PASS :Not enough parameters");
+  return;
+}
 
 void Server::run() {
   std::cerr << "[DEBUG] 4. Runing the server." << std::endl;
