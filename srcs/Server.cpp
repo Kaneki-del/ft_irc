@@ -42,6 +42,10 @@ Server::Server(const int port, const std::string password)
     _poll_fds.push_back(listener_poll_fd);
 }
 
+void Server::checkRegistration(Client * client){
+  if (client->getPassBool() && client->getUserBool())
+        client->setRegistration();
+}
 e_cmd_type Server::getCommandType(std::string command) {
     
     std::map<std::string, e_cmd_type>::iterator it = _command_map.find(command);
@@ -82,6 +86,7 @@ void Server::handle_new_connection() {
 }
 
 void Server::handle_client_command(const int current_fd) {
+
     Client *client = _clients[current_fd];
 
     if (!client) {
@@ -100,9 +105,9 @@ void Server::handle_client_command(const int current_fd) {
             << std::endl;
         close(current_fd);
         Client* client_to_delete = _clients[current_fd]; 
+        _nicknames.erase(client_to_delete->getNickname());
         delete client_to_delete;
         _clients.erase(current_fd);
-        _nicknames.erase(client_to_delete->getNickname());
 
     } else if (bytes_read < 0) {
         std::cerr << "Error in read" << std::endl;
@@ -119,6 +124,7 @@ void Server::handle_client_command(const int current_fd) {
     } else {
         temp_buffer[bytes_read] = '\0';
         std::string temp = client->getReadBuffer().append(temp_buffer, bytes_read);
+        std::cout << "tmp: " << temp << std::endl;
         client->process_and_extract_commands();
     }
 }
@@ -157,6 +163,7 @@ void Server::commandDispatcher(Client *client, std::string commandLine) {
         return; 
     }
     std::string command = splitedCommand[0];
+    std::cout << "cmd: " << command << std::endl;
     e_cmd_type cmd = this->getCommandType(command);
 
     switch (cmd) {

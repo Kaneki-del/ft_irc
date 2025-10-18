@@ -10,17 +10,21 @@ class Client;
 class Client {
 public:
   Client(int fd, Server* serverPtr);
-  std::string _nickname;
-  std::string _username;
-  void check_registration();
+  std::string _nickName;
+  std::string _userName;
+  std::string _realName;
   std::string &getReadBuffer();
   void process_and_extract_commands();
   std::string extractAndEraseFromBuffer(size_t pos_found);
   void send_reply(const std::string &numeric, const std::string &content);
-  bool is_registered();
+  bool isRegistered();
   std::string getNickname();
   void setPassBool(bool state);
+  void setUserBool(bool state);
+  bool getPassBool();
+  bool getUserBool();
   int getFd();
+  void setRegistration();
   // void setAdress(const &std::string A);
 
 private:
@@ -30,6 +34,7 @@ private:
   bool _registered;
   bool _nick_set;
   bool _pass_set;
+  bool _user_set;
   std::string _ip_address;
   Server* _server_ptr;
 };

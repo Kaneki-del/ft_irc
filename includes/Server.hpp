@@ -33,6 +33,7 @@ public:
   void handleNickCommand(Client *client, const std::string &new_nick);
    void commandDispatcher(Client *client, std::string commandLine);
   e_cmd_type getCommandType(std::string command);
+  void checkRegistration(Client * client);
 
 
 private:
@@ -46,7 +47,8 @@ private:
   std::map<int, Client *> _clients;
   std::map<std::string, Client *> _nicknames;
   std::map<std::string, e_cmd_type> _command_map;
-  void handle_pass_command(Client *client, std::vector<std::string>splitedCommand); 
+  void handle_pass_command(Client *client, std::vector<std::string>args); 
+  void handleUserCommand(Client *client, std::vector<std::string>args); 
 
 };
 #endif
