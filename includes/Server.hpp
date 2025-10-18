@@ -1,7 +1,6 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#include "Client.hpp"
 #include <cerrno>
 #include <cstdlib>
 #include <cstring>
@@ -15,13 +14,24 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <vector>
+class Server;
+#include "Client.hpp"
+
+enum e_cmd_type {
+    CMD_UNKNOWN = 0,
+    CMD_PASS    = 1,
+    CMD_NICK    = 2,
+    CMD_USER    = 3,
+};
 
 class Server {
 public:
   Server(const int port, const std::string password);
   void run();
   void handleNickCommand(Client *client, const std::string &new_nick);
-  static void commandDispatcher(Client *client, std::string commandLine);
+   void commandDispatcher(Client *client, std::string commandLine);
+  e_cmd_type getCommandType(std::string command);
+
 
 private:
   std::string _password;
@@ -33,5 +43,8 @@ private:
   std::vector<struct pollfd> _poll_fds;
   std::map<int, Client *> _clients;
   std::map<std::string, Client *> _nicknames;
+  std::map<std::string, e_cmd_type> _command_map;
+  void handle_pass_command(Client *client, std::vector<std::string>splitedCommand); 
+
 };
 #endif

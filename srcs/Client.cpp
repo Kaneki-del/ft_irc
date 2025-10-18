@@ -1,9 +1,9 @@
 #include "../includes/Client.hpp"
 #include "../includes/Server.hpp"
 
-Client::Client(int fd)
+Client::Client(int fd, Server* serverPtr)
     : _fd(fd), _out_buffer(""), _registered(false), _nick_set(false),
-      _pass_set(false) {}
+      _pass_set(false), _server_ptr(serverPtr) {}
 
 std::string Client::extractAndEraseFromBuffer(size_t pos_found) {
   std::string toRetrun = _read_buffer.substr(0, pos_found);
@@ -26,13 +26,22 @@ void Client::send_reply(const std::string &numeric,
   // this->setPollOut(true);
 }
 
+
+void Client::setPassBool(bool state){
+  _pass_set = true;
+}
+
+int Client::getFd(){
+  return _fd;
+}
+
 std::string &Client::getReadBuffer() { return _read_buffer; }
 
 void Client::process_and_extract_commands() {
   size_t pos_found = _read_buffer.find("\r\n");
   while (pos_found != std::string::npos) {
     std::string command_line = extractAndEraseFromBuffer(pos_found);
-    Server::commandDispatcher(this, command_line);
+    _server_ptr->Server::commandDispatcher(this, command_line);
     pos_found = _read_buffer.find("\r\n");
   }
 }

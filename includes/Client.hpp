@@ -1,14 +1,15 @@
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
-
 #include <iostream>
 #include <map>
 #include <string>
 #include <vector>
+class Client;
+#include "Server.hpp"
 
 class Client {
 public:
-  Client(int fd);
+  Client(int fd, Server* serverPtr);
   std::string _nickname;
   std::string _username;
   void check_registration();
@@ -18,6 +19,8 @@ public:
   void send_reply(const std::string &numeric, const std::string &content);
   bool is_registered();
   std::string getNickname();
+  void setPassBool(bool state);
+  int getFd();
   // void setAdress(const &std::string A);
 
 private:
@@ -28,5 +31,6 @@ private:
   bool _nick_set;
   bool _pass_set;
   std::string _ip_address;
+  Server* _server_ptr;
 };
 #endif
