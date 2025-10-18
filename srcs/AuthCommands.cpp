@@ -7,9 +7,11 @@ void Server::handle_pass_command(Client *client, std::vector<std::string>splited
         return;
   }
   std::string client_password = splitedCommand[1];
-  if (_password == client_password) {
-        client->setPassBool(true); 
-    } else {
-        std::cerr << "[LOG] Client FD " << client->getFd() << " provided incorrect password." << std::endl;
-    }
+  if (_password == client_password){
+    client->setPassBool(true); 
+    std::cout << GREEN 
+      << "[SUCCESS] " << " authenticated password successfully." << std::endl;
+  }
+  else 
+    std::cerr << "[LOG] Client FD " << client->getFd() << " provided incorrect password." << std::endl;
 }

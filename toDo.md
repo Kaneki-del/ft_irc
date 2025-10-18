@@ -1,4 +1,6 @@
-- [ ] difine the structor of the project
-- [ ] create the client class
-- [ ] creat the main function
-- [ ] implement and read about pool
+- [x] define the structure of the project
+- [x] create the client class
+- [x] create the main function
+- [x] implement and read about pool
+- [ ] handle the client closing 
+- [ ] make function that do the cleanup when the client Close the connection

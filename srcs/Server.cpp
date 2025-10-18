@@ -32,7 +32,6 @@ Server::Server(const int port, const std::string password)
         close(_listener_fd);
         throw std::runtime_error("Listen failed.");
     }
-    std::cerr << "[DEBUG] 5. Listening on port " << port << "." << std::endl;
 
     struct pollfd listener_poll_fd = {};
 
@@ -83,9 +82,7 @@ void Server::handle_new_connection() {
 }
 
 void Server::handle_client_command(const int current_fd) {
-    // 1. Retrieve the Client object pointer
     Client *client = _clients[current_fd];
-    std::cerr << "[DEBUG] handle_client_command." << std::endl;
 
     if (!client) {
         // Handle case where client object is somehow missing (fatal error)
@@ -101,7 +98,12 @@ void Server::handle_client_command(const int current_fd) {
         // --- MANDATORY: Client Disconnect (Graceful Close) ---
         std::cerr << "[LOG] Client FD " << current_fd << " disconnected gracefully."
             << std::endl;
-        // disconnect_client(current_fd);
+        close(current_fd);
+        Client* client_to_delete = _clients[current_fd]; 
+        delete client_to_delete;
+        _clients.erase(current_fd);
+        _nicknames.erase(client_to_delete->getNickname());
+
     } else if (bytes_read < 0) {
         std::cerr << "Error in read" << std::endl;
     }
@@ -115,9 +117,7 @@ void Server::handle_client_command(const int current_fd) {
         // disconnect_client(current_fd);
         // }
     } else {
-        // --- SUCCESS: Data was Read ---
         temp_buffer[bytes_read] = '\0';
-        // This is the first half of the parsing solution: APPEND
         std::string temp = client->getReadBuffer().append(temp_buffer, bytes_read);
         client->process_and_extract_commands();
     }
@@ -151,7 +151,6 @@ std::vector<std::string> split_string_to_vector(const std::string &input_string,
 }
 
 void Server::commandDispatcher(Client *client, std::string commandLine) {
-    (void)client;
     std::vector<std::string> splitedCommand =
         split_string_to_vector(commandLine, ' ');
     if (splitedCommand.empty()) {
@@ -179,15 +178,14 @@ void Server::commandDispatcher(Client *client, std::string commandLine) {
     }
 }
 void Server::run() {
+
     std::cerr << "[DEBUG] 4. Runing the server." << std::endl;
 
     while (true) {
-        std::cerr << "[DEBUG] Polling on " << _poll_fds.size() << " FDs."
-            << std::endl;
-        std::cerr << "[DEBUG] Listener FD (should be 3): " << _poll_fds[0].fd
+        std::cerr <<  GREEN <<"Polling on " << _poll_fds.size() << " FDs."
             << std::endl;
         int ret = poll(&_poll_fds[0], _poll_fds.size(), -1);
-        std::cerr << "[DEBUG] Poll returned: " << ret << std::endl;
+        std::cerr << "Poll returned: " << ret << std::endl;
         if (ret < 0) {
             throw std::runtime_error("Poll fatal error");
         }

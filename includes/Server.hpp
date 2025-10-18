@@ -1,6 +1,8 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+#define GREEN    "\x1b[32m" 
+#define RED      "\x1b[31m"
 #include <cerrno>
 #include <cstdlib>
 #include <cstring>

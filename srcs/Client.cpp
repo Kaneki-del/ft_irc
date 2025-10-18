@@ -28,7 +28,7 @@ void Client::send_reply(const std::string &numeric,
 
 
 void Client::setPassBool(bool state){
-  _pass_set = true;
+  _pass_set = state;
 }
 
 int Client::getFd(){
