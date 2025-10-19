@@ -36,6 +36,7 @@ public:
   void checkRegistration(Client * client);
 
 
+
 private:
   std::string _password;
   int _port;
@@ -49,6 +50,7 @@ private:
   std::map<std::string, e_cmd_type> _command_map;
   void handle_pass_command(Client *client, std::vector<std::string>args); 
   void handleUserCommand(Client *client, std::vector<std::string>args); 
+  void handleNickCommand(Client *client, std::vector<std::string>args);
 
 };
 #endif

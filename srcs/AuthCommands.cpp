@@ -30,3 +30,17 @@ void Server::handleUserCommand(Client *client, std::vector<std::string>args){
   client->setUserBool(true); 
   checkRegistration(client);
 }
+
+
+void Server::handleNickCommand(Client *client, std::vector<std::string>args){
+  if (args.size() < 2) { 
+        client->send_reply("461", "USER :Not enough parameters");
+        return;
+    }
+  if (client->isRegistered()) {
+        client->send_reply("462", ":You may not reregister");
+        return;
+  }
+  checkRegistration(client);
+}
+
