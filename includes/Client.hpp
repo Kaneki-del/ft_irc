@@ -21,6 +21,7 @@ public:
   std::string getNickname();
   void setPassBool(bool state);
   void setUserBool(bool state);
+  void setNickBool(bool state);
   bool getPassBool();
   bool getUserBool();
   int getFd();

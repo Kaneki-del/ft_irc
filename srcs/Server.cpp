@@ -171,10 +171,10 @@ void Server::commandDispatcher(Client *client, std::string commandLine) {
             handle_pass_command(client, splitedCommand); 
             break;
         case CMD_NICK:
-            // ... implementation
+            handleNickCommand(client, splitedCommand);
             break;
         case CMD_USER:
-            // ... implementation
+            handleUserCommand(client, splitedCommand);
             break;
         case CMD_UNKNOWN:
             // ... implementation

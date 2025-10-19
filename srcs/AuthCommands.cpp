@@ -16,9 +16,27 @@ void Server::handle_pass_command(Client *client, std::vector<std::string>args){
     std::cerr << "[LOG] Client FD " << client->getFd() << " provided incorrect password." << std::endl;
 }
 
+void Server::handleNickCommand(Client *client, std::vector<std::string>args){
+  if (args.size() < 2) { 
+        client->send_reply("431", "USER :Not enough parameters");
+        return;
+    }
+  if (client->isRegistered()) {
+        client->send_reply("462", ":You may not reregister");
+        return;
+  }
+    std::cout << GREEN 
+      << "[SUCCESS] " << " Nick  successfully." << std::endl;
+  client->_nickName = args[1];
+  client->setNickBool(true);
+  checkRegistration(client);
+}
+
+
+
 void Server::handleUserCommand(Client *client, std::vector<std::string>args){
   if (args.size() < 5) { 
-        client->send_reply("461", "USER :Not enough parameters");
+        client->send_reply("461", " :Not enough parameters");
         return;
     }
   if (client->isRegistered()) {
@@ -28,19 +46,9 @@ void Server::handleUserCommand(Client *client, std::vector<std::string>args){
   client->_userName = args[1];
   client->_realName = args[4];
   client->setUserBool(true); 
+    std::cout << GREEN 
+      << "[SUCCESS] " << " User  successfully." << std::endl;
   checkRegistration(client);
 }
 
-
-void Server::handleNickCommand(Client *client, std::vector<std::string>args){
-  if (args.size() < 2) { 
-        client->send_reply("461", "USER :Not enough parameters");
-        return;
-    }
-  if (client->isRegistered()) {
-        client->send_reply("462", ":You may not reregister");
-        return;
-  }
-  checkRegistration(client);
-}
 

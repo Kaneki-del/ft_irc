@@ -14,17 +14,17 @@ std::string Client::extractAndEraseFromBuffer(size_t pos_found) {
 bool Client::isRegistered() { return _registered; }
 std::string Client::getNickname() { return _nickName; }
 
-void Client::send_reply(const std::string &numeric,
-                        const std::string &content) {
-  std::string prefix = ":ft_irc.local";
-  std::string recipient = this->isRegistered() ? this->getNickname() : "*";
-
-  std::string full_message =
-      prefix + " " + numeric + " " + recipient + " " + content;
-
-  // this->getOutBuffer().append(full_message + "\r\n");
-  // this->setPollOut(true);
-}
+// void Client::send_reply(const std::string &numeric,
+//                         const std::string &content) {
+//   // std::string prefix = ":ft_irc.local";
+//   // std::string recipient = this->isRegistered() ? this->getNickname() : "*";
+//   
+//
+//   std::string full_message = numeric + " " +  + " " + recipient + " " + content;
+//
+//   // this->getOutBuffer().append(full_message + "\r\n");
+//   // this->setPollOut(true);
+// }
 
 bool Client::getPassBool(){
   return _pass_set;
@@ -36,6 +36,10 @@ bool Client::getUserBool(){
 
 void Client::setRegistration(){
   _registered = true;
+}
+
+void Client::setNickBool(bool state){
+  _nick_set = state;
 }
 
 
