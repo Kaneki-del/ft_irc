@@ -36,6 +36,7 @@ public:
   void checkRegistration(Client * client);
   std::vector<struct pollfd> & getPollfds();
   void handle_outgoing_data(int clientFd);
+  bool isValidNickName(std::string  nickname);
 
 private:
   std::string _password;

@@ -11,7 +11,7 @@ class Client {
 public:
   Client(int fd, Server* serverPtr);
   std::string _nickName;
-  std::string _userName;
+  // std::string _userName;
   std::string _realName;
 
   void process_and_extract_commands();

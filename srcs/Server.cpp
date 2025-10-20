@@ -193,7 +193,7 @@ void Server::commandDispatcher(Client *client, std::string commandLine) {
     }
     std::string command = splitedCommand[0];
     e_cmd_type cmd = this->getCommandType(command);
-
+    std::cout << "full cmd: " << commandLine << std::endl;
     switch (cmd) {
         case CMD_PASS:
             handle_pass_command(client, splitedCommand); 

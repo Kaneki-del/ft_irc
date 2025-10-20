@@ -33,34 +33,52 @@ void Server::handle_pass_command(Client *client, std::vector<std::string>args){
 
 void Server::handleNickCommand(Client *client, std::vector<std::string>args){
   if (args.size() < 2) { 
-        client->send_reply("431", "USER :Not enough parameters");
+        client->send_reply("431", ":No nickname given");
         return;
-    }
+  }
+
   if (client->isRegistered()) {
         client->send_reply("462", ":You may not reregister");
         return;
   }
-    std::cout << GREEN 
-      << "[SUCCESS] " << " Nick  successfully." << std::endl;
-  client->_nickName = args[1];
-  client->setNickState(true);
-  checkRegistration(client);
+
+  std::string new_nick = args[1];
+  std::map<std::string, Client*>::iterator it = _nicknames.find(new_nick);
+  if (it != _nicknames.end()) {
+    if (it->second == client){
+      client->send_reply("433", new_nick + ":Nickname is already in use");
+      return;
+    }
+  }
+  else if (!isValidNickName(nickname)){
+
+  }
+
+  else{
+      std::cout << GREEN 
+        << "[SUCCESS] " << " Nick  successfully." << std::endl;
+      client->_nickName = new_nick;
+      client->setNickState(true);
+      checkRegistration(client);
+  }
 }
 
 void Server::handleUserCommand(Client *client, std::vector<std::string>args){
-  if (args.size() < 5) { 
-        client->send_reply("461", " :Not enough parameters");
-        return;
-    }
-  if (client->isRegistered()) {
-        client->send_reply("462", ":You may not reregister");
-        return;
+  if (args.size() < 4) { 
+    client->send_reply("461", " :Not enough parameters");
+    return;
   }
-  client->_userName = args[1];
-  client->_realName = args[4];
+  if (client->isRegistered()) {
+    client->send_reply("462", ":You may not reregister");
+    return;
+  }
+  // client->_userName = args[1];
+  client->_realName = args[args.size() -1];
+  // std::cout << "_userName: " << client->_userName << std::endl;
+  std::cout << "_realName: " << client->_realName << std::endl;
   client->setUserState(true); 
-    std::cout << GREEN 
-      << "[SUCCESS] " << " User  successfully." << std::endl;
+  std::cout << GREEN 
+    << "[SUCCESS] " << " User  successfully." << std::endl;
   checkRegistration(client);
 }
 
