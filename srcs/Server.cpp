@@ -1,5 +1,5 @@
 #include "../includes/Server.hpp"
-#include <vector>
+
 Server::Server(const int port, const std::string password)
     : _password(password), _port(port), _listener_fd(-1),
     _server_name("ft_irc.local") {
@@ -153,7 +153,6 @@ void Server::handle_client_command(const int current_fd) {
     } else {
         temp_buffer[bytes_read] = '\0';
         std::string temp = client->getReadBuffer().append(temp_buffer, bytes_read);
-        std::cout << "tmp: " << temp << std::endl;
         client->process_and_extract_commands();
     }
 }
@@ -173,8 +172,6 @@ std::vector<std::string> split_string_to_vector(const std::string &input_string,
             trailing_part = input_string.substr(colon_pos + 1);
         }
     }
-    std::cout << "positional_part: " << positional_part << std::endl;
-    std::cout << "trailing_part: " << trailing_part << std::endl;
     std::vector<std::string> tokens;
     std::stringstream ss(positional_part);
     std::string segment;
@@ -183,10 +180,8 @@ std::vector<std::string> split_string_to_vector(const std::string &input_string,
             tokens.push_back(segment);
     }
     if (!trailing_part.empty()){
-        std::cout << "trailing_part: " << trailing_part << std::endl;
         tokens.push_back(trailing_part);
     }
-    std::cout << "tokens[1] " << tokens[1] << std::endl;
     return tokens;
 }
 
@@ -196,9 +191,6 @@ void Server::commandDispatcher(Client *client, std::string commandLine) {
     if (splitedCommand.empty()) {
         return; 
     }
-    std::cout << "args[0]: " << splitedCommand[0] << std::endl;
-    std::cout << "args[1]: " << splitedCommand[1] << std::endl;
-
     std::string command = splitedCommand[0];
     e_cmd_type cmd = this->getCommandType(command);
 

@@ -1,5 +1,14 @@
 #include "../includes/Server.hpp"
 
+std::string trim(const std::string &str) {
+  size_t first = str.find_first_not_of(" \t\n\r");
+  if (std::string::npos == first) {
+    return str;
+  }
+  size_t last = str.find_last_not_of(" \t\n\r");
+  return str.substr(first, (last - first + 1));
+}
+
 void Server::handle_pass_command(Client *client, std::vector<std::string>args){
   
   if (client->isRegistered()) {
@@ -10,7 +19,8 @@ void Server::handle_pass_command(Client *client, std::vector<std::string>args){
         client->send_reply("461", "PASS :Not enough parameters");
         return;
   }
-  std::string client_password = args[1];
+  std::string client_password = trim(args[1]);
+
   std::cout << "the password the client send *" << client_password << "*" <<  std::endl;
   if (_password == client_password){
     client->setPassState(true); 
