@@ -8,7 +8,7 @@ void Server::handle_pass_command(Client *client, std::vector<std::string>args){
   }
   std::string client_password = args[1];
   if (_password == client_password){
-    client->setPassBool(true); 
+    client->setPassState(true); 
     std::cout << GREEN 
       << "[SUCCESS] " << " authenticated password successfully." << std::endl;
   }
@@ -28,7 +28,7 @@ void Server::handleNickCommand(Client *client, std::vector<std::string>args){
     std::cout << GREEN 
       << "[SUCCESS] " << " Nick  successfully." << std::endl;
   client->_nickName = args[1];
-  client->setNickBool(true);
+  client->setNickState(true);
   checkRegistration(client);
 }
 
@@ -45,7 +45,7 @@ void Server::handleUserCommand(Client *client, std::vector<std::string>args){
   }
   client->_userName = args[1];
   client->_realName = args[4];
-  client->setUserBool(true); 
+  client->setUserState(true); 
     std::cout << GREEN 
       << "[SUCCESS] " << " User  successfully." << std::endl;
   checkRegistration(client);

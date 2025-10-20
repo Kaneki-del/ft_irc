@@ -13,20 +13,28 @@ public:
   std::string _nickName;
   std::string _userName;
   std::string _realName;
-  std::string &getReadBuffer();
+
   void process_and_extract_commands();
   std::string extractAndEraseFromBuffer(size_t pos_found);
-  void send_reply(const std::string &numeric, const std::string &content);
-  bool isRegistered();
+
+
   std::string getNickname();
-  void setPassBool(bool state);
-  void setUserBool(bool state);
-  void setNickBool(bool state);
-  bool getPassBool();
-  bool getUserBool();
+  bool getPassState();
+  std::string &getReadBuffer();
+  std::string &getOutBuffer();
+  bool isRegistered();
+  bool getUserState();
   int getFd();
+
   void setRegistration();
+  void setPassState(bool state);
+  void setUserState(bool state);
+  void setNickState(bool state);
+  void setPollOut(bool state);
   // void setAdress(const &std::string A);
+
+  void send_reply(const std::string &numeric, const std::string &content);
+
 
 private:
   int _fd;

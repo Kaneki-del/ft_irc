@@ -1,4 +1,5 @@
 #include "../includes/Server.hpp"
+#include <vector>
 Server::Server(const int port, const std::string password)
     : _password(password), _port(port), _listener_fd(-1),
     _server_name("ft_irc.local") {
@@ -42,8 +43,12 @@ Server::Server(const int port, const std::string password)
     _poll_fds.push_back(listener_poll_fd);
 }
 
+std::vector<struct pollfd> & Server::getPollfds(){
+    return _poll_fds;
+}
+
 void Server::checkRegistration(Client * client){
-  if (client->getPassBool() && client->getUserBool())
+  if (client->getPassState() && client->getUserState())
         client->setRegistration();
 }
 e_cmd_type Server::getCommandType(std::string command) {

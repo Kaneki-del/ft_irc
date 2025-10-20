@@ -34,8 +34,7 @@ public:
    void commandDispatcher(Client *client, std::string commandLine);
   e_cmd_type getCommandType(std::string command);
   void checkRegistration(Client * client);
-
-
+  std::vector<struct pollfd> & getPollfds();
 
 private:
   std::string _password;
