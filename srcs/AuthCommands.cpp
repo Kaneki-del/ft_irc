@@ -1,19 +1,24 @@
 #include "../includes/Server.hpp"
 
-
 void Server::handle_pass_command(Client *client, std::vector<std::string>args){
+  
+  if (client->isRegistered()) {
+        client->send_reply("462", ":You may not reregister");
+        return;
+  }
   if (args.size() < 2) { 
         client->send_reply("461", "PASS :Not enough parameters");
         return;
   }
   std::string client_password = args[1];
+  std::cout << "the password the client send *" << client_password << "*" <<  std::endl;
   if (_password == client_password){
     client->setPassState(true); 
     std::cout << GREEN 
       << "[SUCCESS] " << " authenticated password successfully." << std::endl;
   }
-  else 
-    std::cerr << "[LOG] Client FD " << client->getFd() << " provided incorrect password." << std::endl;
+  else
+    client->send_reply("464", ":Password incorrect");
 }
 
 void Server::handleNickCommand(Client *client, std::vector<std::string>args){
@@ -31,8 +36,6 @@ void Server::handleNickCommand(Client *client, std::vector<std::string>args){
   client->setNickState(true);
   checkRegistration(client);
 }
-
-
 
 void Server::handleUserCommand(Client *client, std::vector<std::string>args){
   if (args.size() < 5) { 

@@ -173,15 +173,20 @@ std::vector<std::string> split_string_to_vector(const std::string &input_string,
             trailing_part = input_string.substr(colon_pos + 1);
         }
     }
+    std::cout << "positional_part: " << positional_part << std::endl;
+    std::cout << "trailing_part: " << trailing_part << std::endl;
     std::vector<std::string> tokens;
-    std::stringstream ss(input_string);
+    std::stringstream ss(positional_part);
     std::string segment;
     while (std::getline(ss, segment, delimiter)) {
         if (!segment.empty())
             tokens.push_back(segment);
     }
-    if (!trailing_part.empty()) 
+    if (!trailing_part.empty()){
+        std::cout << "trailing_part: " << trailing_part << std::endl;
         tokens.push_back(trailing_part);
+    }
+    std::cout << "tokens[1] " << tokens[1] << std::endl;
     return tokens;
 }
 
@@ -191,8 +196,10 @@ void Server::commandDispatcher(Client *client, std::string commandLine) {
     if (splitedCommand.empty()) {
         return; 
     }
+    std::cout << "args[0]: " << splitedCommand[0] << std::endl;
+    std::cout << "args[1]: " << splitedCommand[1] << std::endl;
+
     std::string command = splitedCommand[0];
-    std::cout << "cmd: " << command << std::endl;
     e_cmd_type cmd = this->getCommandType(command);
 
     switch (cmd) {
@@ -245,7 +252,6 @@ void Server::run() {
 
             else if (_poll_fds[i].revents & POLLOUT)
                 handle_outgoing_data(current_fd);
-                
         }
     }
 }

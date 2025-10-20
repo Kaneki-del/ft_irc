@@ -6,3 +6,4 @@
 - [ ] make function that do the cleanup when the client Close the connection
 - [ ] parse the nick passed and see how to handle the errors
 - [ ] check for the other authentication if they are respecting the codes
+- [ ] ask for the case that i can send more that one arg like "PASS PASS password"
