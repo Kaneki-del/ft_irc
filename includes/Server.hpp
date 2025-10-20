@@ -35,6 +35,7 @@ public:
   e_cmd_type getCommandType(std::string command);
   void checkRegistration(Client * client);
   std::vector<struct pollfd> & getPollfds();
+  void handle_outgoing_data(int clientFd);
 
 private:
   std::string _password;

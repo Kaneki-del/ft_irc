@@ -47,6 +47,30 @@ std::vector<struct pollfd> & Server::getPollfds(){
     return _poll_fds;
 }
 
+void Server::handle_outgoing_data(int clientFd){
+
+    Client* client = _clients[clientFd];
+    std::string& buffer = client->getOutBuffer();
+    const char* data_ptr = buffer.c_str(); 
+    size_t length = buffer.length();
+
+    ssize_t bytes_sent = send(client->getFd(), data_ptr, length, 0);
+    if (bytes_sent > 0) {
+        buffer.erase(0, bytes_sent);
+        if (buffer.empty()) {
+            client->setPollOut(false); 
+        }
+    } else if (bytes_sent < 0) {
+        //TODO
+        if (errno != EWOULDBLOCK && errno != EAGAIN) {
+            // Fatal error (e.g., connection reset). Treat as disconnect.
+            // T
+            // this->disconnect_client(client->getFd());
+        }
+    }
+
+}
+
 void Server::checkRegistration(Client * client){
   if (client->getPassState() && client->getUserState())
         client->setRegistration();
@@ -204,12 +228,24 @@ void Server::run() {
         for (long unsigned int i = 0; i < _poll_fds.size(); ++i) {
             int current_fd = _poll_fds[i].fd;
 
+            //TODO
+            // if (_poll_fds[i].revents & (POLLHUP | POLLERR)) {
+            //     // This MUST be the first check (or handle it inside the POLLIN block if recv returns 0)
+            //     disconnect_client(current_fd, i); // <-- Must pass index 'i' for vector erase
+            //     i--; // CRITICAL: Decrement the loop counter after erasing from vector
+            //     continue;
+            // }
+            
             if (_poll_fds[i].revents & POLLIN) {
                 if (current_fd == _listener_fd)
                     handle_new_connection();
                 else
                     handle_client_command(current_fd);
             }
+
+            else if (_poll_fds[i].revents & POLLOUT)
+                handle_outgoing_data(current_fd);
+                
         }
     }
 }
