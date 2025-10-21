@@ -8,3 +8,4 @@
 - [x] check for the other authentication if they are respecting the codes
 - [x] ask for the case that i can send more that one arg like "PASS PASS password"
 - [x] ask in case of the user-name have space should we only take the first one ?
+- [ ] check on each syscall for failure to do the right cleanup and message

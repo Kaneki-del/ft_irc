@@ -13,7 +13,11 @@ Server::Server(const int port, const std::string password)
     if (_listenerFd < 0) {
         throw std::runtime_error("Socket creation failed.");
     }
-
+    int opt_val = 1; 
+    if (setsockopt(_listenerFd, SOL_SOCKET, SO_REUSEADDR, &opt_val, sizeof(opt_val)) < 0) {
+        throw std::runtime_error("Socket creation failed.");
+    perror("setsockopt(SO_REUSEADDR) failed"); 
+}
     fcntl(_listenerFd, F_SETFL, O_NONBLOCK);
 
     struct sockaddr_in serv_addr;
