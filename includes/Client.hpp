@@ -11,11 +11,11 @@ class Client {
 public:
   Client(int fd, Server* serverPtr);
   std::string _nickName;
-  // std::string _userName;
+  std::string _userName;
   std::string _realName;
 
   void processAndExtractCommands();
-  std::string extractAndEraseFromBuffer(size_t posFound);
+  std::string extractAndEraseFromBuffer(size_t posFound, int delimiterLen);
 
 
   std::string getNickname();

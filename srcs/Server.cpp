@@ -219,7 +219,6 @@ void Server::run() {
         std::cerr <<  GREEN <<"Polling on " << _pollFds.size() << " FDs."
             << std::endl;
         int ret = poll(&_pollFds[0], _pollFds.size(), -1);
-        std::cerr << "Poll returned: " << ret << std::endl;
         if (ret < 0) {
             throw std::runtime_error("Poll fatal error");
         }

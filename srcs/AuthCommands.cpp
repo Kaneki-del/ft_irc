@@ -97,9 +97,7 @@ void Server::handleUserCommand(Client *client, std::vector<std::string>args){
     client->send_reply("462", ":You may not reregister");
     return;
   }
-  // client->_userName = args[1];
-  client->_realName = args[args.size() -1];
-  // std::cout << "_userName: " << client->_userName << std::endl;
+  client->_userName = args[1];
   std::cout << "_realName: " << client->_realName << std::endl;
   client->setUserState(true); 
   std::cout << GREEN 

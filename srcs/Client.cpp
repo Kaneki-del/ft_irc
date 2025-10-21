@@ -6,9 +6,9 @@ Client::Client(int fd, Server* serverPtr)
       _passSet(false), _serverPtr(serverPtr) {}
 
 //Get the commnad untile the /r/n return it and remove it from the buffer
-std::string Client::extractAndEraseFromBuffer(size_t pos_found) {
+std::string Client::extractAndEraseFromBuffer(size_t pos_found, int dilimiterLen) {
   std::string toRetrun = _readBuffer.substr(0, pos_found);
-  _readBuffer = _readBuffer.substr(pos_found + 2);
+  _readBuffer = _readBuffer.substr(pos_found + dilimiterLen);
   return toRetrun;
 }
 
@@ -97,10 +97,20 @@ void Client::setPollOut(bool state){
     
 // retreave the commmand and its argument then run it 
 void Client::processAndExtractCommands() {
+  int dilimiterLen;
   size_t pos_found = _readBuffer.find("\r\n");
+  dilimiterLen = 2;
+  if (pos_found == std::string::npos)
+  {
+    pos_found = _readBuffer.find("\n");
+    dilimiterLen = 1;
+  }
+
   while (pos_found != std::string::npos) {
-    std::string command_line = extractAndEraseFromBuffer(pos_found);
+    std::string command_line = extractAndEraseFromBuffer(pos_found, dilimiterLen);
     _serverPtr->Server::commandDispatcher(this, command_line);
     pos_found = _readBuffer.find("\r\n");
+    if (pos_found == std::string::npos)
+      pos_found = _readBuffer.find("\n");
   }
 }

@@ -2,9 +2,9 @@
 - [x] create the client class
 - [x] create the main function
 - [x] implement and read about pool
-- [ ] handle the client closing 
-- [ ] make function that do the cleanup when the client Close the connection
-- [ ] parse the nick passed and see how to handle the errors
-- [ ] check for the other authentication if they are respecting the codes
-- [ ] ask for the case that i can send more that one arg like "PASS PASS password"
-- [ ] ask in case of the user-name have space should we only take the first one ?
+- [x] handle the client closing 
+- [x] make function that do the cleanup when the client Close the connection
+- [x] parse the nick passed and see how to handle the errors
+- [x] check for the other authentication if they are respecting the codes
+- [x] ask for the case that i can send more that one arg like "PASS PASS password"
+- [x] ask in case of the user-name have space should we only take the first one ?
