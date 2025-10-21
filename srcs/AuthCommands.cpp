@@ -11,8 +11,6 @@ std::string trim(const std::string &str) {
 
 bool Server::isValidNickName(std::string nickname) {
     //TODO check if this line is correct
-    if (nickname.empty() || nickname.length() < 1)
-        return false;
     char first_char = nickname[0];
     if (nickname.find(' ') != std::string::npos) {
         return false;
@@ -44,6 +42,7 @@ void Server::handlePassCommand(Client *client, std::vector<std::string>args){
   }
   std::string client_password = trim(args[1]);
 
+
   std::cout << "the password the client send *" << client_password << "*" <<  std::endl;
   if (_password == client_password){
     client->setPassState(true); 
@@ -55,30 +54,38 @@ void Server::handlePassCommand(Client *client, std::vector<std::string>args){
 }
 
 void Server::handleNickCommand(Client *client, std::vector<std::string>args){
-  if (args.size() < 2) { 
+  if (args.size() < 2 || trim(args[1]).empty()) { // Check argument existence AND trimmed emptiness
         client->send_reply("431", ":No nickname given");
         return;
-  }
+    }
   if (client->isRegistered()) {
         client->send_reply("462", ":You may not reregister");
         return;
   }
   std::string new_nick = trim(args[1]);
-  std::map<std::string, Client*>::iterator it = _nicknames.find(new_nick);
-  if (it != _nicknames.end()) {
-    client->send_reply("433", new_nick + " :Nickname is already in use");
-    return;
-  }
-  else if (!isValidNickName(new_nick)){
+  std::string old_nick = client->getNickname();
+  std::cout << "old_nick: " << old_nick << std::endl;
+  if (!isValidNickName(new_nick)){
       client->send_reply("432", new_nick + ":Erroneus nickname");
       return;
   }
-  else{
-      client->_nickName = new_nick;
-      _nicknames[new_nick] = client;
-      client->setNickState(true);
-      checkRegistration(client);
+
+  std::map<std::string, Client*>::iterator it = _nicknames.find(new_nick);
+  if (it != _nicknames.end()) {
+    if (it->second == client)
+      return; 
+    client->send_reply("433", new_nick + " :Nickname is already in use");
+    return;
   }
+  if (!old_nick.empty()) {
+        _nicknames.erase(old_nick);
+        // Logic to broadcast the NICK change message to network
+  }
+  client->_nickName = new_nick;
+  _nicknames[new_nick] = client;
+  client->setNickState(true);
+  if (!client->isRegistered())
+      checkRegistration(client); 
 }
 
 void Server::handleUserCommand(Client *client, std::vector<std::string>args){
@@ -95,7 +102,8 @@ void Server::handleUserCommand(Client *client, std::vector<std::string>args){
   client->setUserState(true); 
   std::cout << GREEN 
     << "[SUCCESS] " << " User  successfully." << std::endl;
-  checkRegistration(client);
+  if (!client->isRegistered())
+      checkRegistration(client); 
 }
 
 
