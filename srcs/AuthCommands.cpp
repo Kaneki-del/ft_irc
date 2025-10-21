@@ -31,6 +31,7 @@ bool Server::isValidNickName(std::string nickname) {
     }
     return true; 
 }
+
 void Server::handlePassCommand(Client *client, std::vector<std::string>args){
   
   if (client->isRegistered()) {
@@ -62,15 +63,9 @@ void Server::handleNickCommand(Client *client, std::vector<std::string>args){
         client->send_reply("462", ":You may not reregister");
         return;
   }
-  // std::cout << RED << "the new nich alredy used 1" << std::endl;
   std::string new_nick = trim(args[1]);
-  // std::cout << "new nick: " << new_nick << std::endl;
   std::map<std::string, Client*>::iterator it = _nicknames.find(new_nick);
   if (it != _nicknames.end()) {
-    if (it->second == client) {
-      std::cout << "[LOG] Nickname is unchanged and owned by client." << std::endl;
-      return;
-    }
     client->send_reply("433", new_nick + " :Nickname is already in use");
     return;
   }
@@ -79,8 +74,6 @@ void Server::handleNickCommand(Client *client, std::vector<std::string>args){
       return;
   }
   else{
-      std::cout << GREEN 
-        << "[SUCCESS] " << " Nick  successfully." << std::endl;
       client->_nickName = new_nick;
       _nicknames[new_nick] = client;
       client->setNickState(true);
@@ -98,7 +91,7 @@ void Server::handleUserCommand(Client *client, std::vector<std::string>args){
     return;
   }
   client->_userName = args[1];
-  std::cout << "_realName: " << client->_realName << std::endl;
+  std::cout << "_userName: " << client->_userName << std::endl;
   client->setUserState(true); 
   std::cout << GREEN 
     << "[SUCCESS] " << " User  successfully." << std::endl;
