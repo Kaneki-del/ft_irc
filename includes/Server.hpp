@@ -3,6 +3,7 @@
 
 #define GREEN    "\x1b[32m" 
 #define RED      "\x1b[31m"
+
 #include <cerrno>
 #include <cstdlib>
 #include <cstring>
@@ -27,31 +28,35 @@ enum e_cmd_type {
 };
 
 class Server {
+
 public:
+
   Server(const int port, const std::string password);
   void run();
-  void handleNickCommand(Client *client, const std::string &new_nick);
-   void commandDispatcher(Client *client, std::string commandLine);
-  e_cmd_type getCommandType(std::string command);
+  void commandDispatcher(Client *client, std::string commandLine);
   void checkRegistration(Client * client);
+  bool handleOutgoingData(int clientFd);
+  // bool isValidNickName(std::string  nickname);
+  e_cmd_type getCommandType(std::string command);
   std::vector<struct pollfd> & getPollfds();
-  void handle_outgoing_data(int clientFd);
-  bool isValidNickName(std::string  nickname);
+  void disconnectClient(int currentFd);
 
 private:
-  std::string _password;
-  int _port;
-  void handle_new_connection();
-  void handle_client_command(const int current_fd);
-  int _listener_fd;
-  std::string _server_name;
-  std::vector<struct pollfd> _poll_fds;
-  std::map<int, Client *> _clients;
-  std::map<std::string, Client *> _nicknames;
-  std::map<std::string, e_cmd_type> _command_map;
-  void handle_pass_command(Client *client, std::vector<std::string>args); 
+
+  void handleNewConnection();
+  bool handleClientCommand(const int currentFd);
+  //Authentication commands 
+  void handlePassCommand(Client *client, std::vector<std::string>args); 
   void handleUserCommand(Client *client, std::vector<std::string>args); 
   void handleNickCommand(Client *client, std::vector<std::string>args);
+  std::string _password;
+  int _port;
+  int _listenerFd;
+  std::string _serverName;
+  std::vector<struct pollfd> _pollFds;
+  std::map<int, Client *> _clients;
+  std::map<std::string, Client *> _nicknames;
+  std::map<std::string, e_cmd_type> _commandMap;
 
 };
 #endif

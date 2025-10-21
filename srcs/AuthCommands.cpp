@@ -9,7 +9,7 @@ std::string trim(const std::string &str) {
   return str.substr(first, (last - first + 1));
 }
 
-void Server::handle_pass_command(Client *client, std::vector<std::string>args){
+void Server::handlePassCommand(Client *client, std::vector<std::string>args){
   
   if (client->isRegistered()) {
         client->send_reply("462", ":You may not reregister");
@@ -50,10 +50,10 @@ void Server::handleNickCommand(Client *client, std::vector<std::string>args){
       return;
     }
   }
-  else if (!isValidNickName(nickname)){
-
-  }
-
+  // else if (!isValidNickName(nickname)){
+  //
+  // }
+  //
   else{
       std::cout << GREEN 
         << "[SUCCESS] " << " Nick  successfully." << std::endl;

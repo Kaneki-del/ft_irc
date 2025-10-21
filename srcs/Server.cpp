@@ -1,53 +1,64 @@
 #include "../includes/Server.hpp"
 
 Server::Server(const int port, const std::string password)
-    : _password(password), _port(port), _listener_fd(-1),
-    _server_name("ft_irc.local") {
-    this->_command_map["PASS"] = CMD_PASS;
-    this->_command_map["NICK"] = CMD_NICK;
-    this->_command_map["USER"] = CMD_USER;
-    _listener_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    : _password(password), _port(port), _listenerFd(-1),
+    _serverName("ft_irc.local") 
+{
 
-    if (_listener_fd < 0) {
+    this->_commandMap["PASS"] = CMD_PASS;
+    this->_commandMap["NICK"] = CMD_NICK;
+    this->_commandMap["USER"] = CMD_USER;
+
+    _listenerFd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+    if (_listenerFd < 0) {
         throw std::runtime_error("Socket creation failed.");
     }
-    fcntl(_listener_fd, F_SETFL, O_NONBLOCK);
+
+    fcntl(_listenerFd, F_SETFL, O_NONBLOCK);
 
     struct sockaddr_in serv_addr;
     std::memset(&serv_addr, 0, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(_port);
-    if (bind(_listener_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) ==
-        -1) {
+    if (bind(_listenerFd, (struct sockaddr *)&serv_addr,
+             sizeof(serv_addr)) == -1) {
         std::cerr << "Error: Failed to bind socket to port " << _port << "."
             << std::endl;
-
-        close(_listener_fd);
-
+        close(_listenerFd);
         throw std::runtime_error(
             "Fatal server initialization error (bind failed).");
     }
 
-    listen(_listener_fd, SOMAXCONN);
-    if (listen(_listener_fd, SOMAXCONN) == -1) {
-        close(_listener_fd);
+    listen(_listenerFd, SOMAXCONN);
+    if (listen(_listenerFd, SOMAXCONN) == -1) {
+        close(_listenerFd);
         throw std::runtime_error("Listen failed.");
     }
 
     struct pollfd listener_poll_fd = {};
-
-    listener_poll_fd.fd = _listener_fd;
-
+    listener_poll_fd.fd = _listenerFd;
     listener_poll_fd.events = POLLIN;
     listener_poll_fd.revents = 0;
-    _poll_fds.push_back(listener_poll_fd);
+    _pollFds.push_back(listener_poll_fd);
 }
 
 std::vector<struct pollfd> & Server::getPollfds(){
-    return _poll_fds;
+    return _pollFds;
 }
 
-void Server::handle_outgoing_data(int clientFd){
+void Server::disconnectClient(int current_fd) {
+    std::cerr << RED << "[LOG] Client FD " << current_fd << " disconnected ."
+        << std::endl;
+    Client* client_to_delete = _clients[current_fd];
+    _clients.erase(current_fd);
+    close(current_fd);
+    _nicknames.erase(client_to_delete->getNickname());
+    delete client_to_delete;
+
+}
+
+bool Server::handleOutgoingData(int clientFd){
 
     Client* client = _clients[clientFd];
     std::string& buffer = client->getOutBuffer();
@@ -61,13 +72,11 @@ void Server::handle_outgoing_data(int clientFd){
             client->setPollOut(false); 
         }
     } else if (bytes_sent < 0) {
-        //TODO
         if (errno != EWOULDBLOCK && errno != EAGAIN) {
-            // Fatal error (e.g., connection reset). Treat as disconnect.
-            // T
-            // this->disconnect_client(client->getFd());
+            return true;
         }
     }
+    return false;
 
 }
 
@@ -77,9 +86,9 @@ void Server::checkRegistration(Client * client){
 }
 e_cmd_type Server::getCommandType(std::string command) {
     
-    std::map<std::string, e_cmd_type>::iterator it = _command_map.find(command);
+    std::map<std::string, e_cmd_type>::iterator it = _commandMap.find(command);
 
-    if (it != _command_map.end()) {
+    if (it != _commandMap.end()) {
         return it->second;
     } else {
         return CMD_UNKNOWN; 
@@ -87,13 +96,13 @@ e_cmd_type Server::getCommandType(std::string command) {
 }
 // void Server::setAdress(const &std::string A) { _ip_adress = A; }
 
-void Server::handle_new_connection() {
+void Server::handleNewConnection() {
     struct sockaddr_in client_addr;
     socklen_t addr_size = sizeof(client_addr);
     std::memset(&client_addr, 0, addr_size);
 
     int new_client_fd =
-        accept(_listener_fd, (struct sockaddr *)&client_addr, &addr_size);
+        accept(_listenerFd, (struct sockaddr *)&client_addr, &addr_size);
     // TODO check later for fealure -1
     //
     //
@@ -111,17 +120,17 @@ void Server::handle_new_connection() {
     client_poll_fd.fd = new_client_fd;
     client_poll_fd.events = POLLIN;
     client_poll_fd.revents = 0;
-    _poll_fds.push_back(client_poll_fd);
+    _pollFds.push_back(client_poll_fd);
 }
 
-void Server::handle_client_command(const int current_fd) {
+bool Server::handleClientCommand(const int current_fd) {
 
     Client *client = _clients[current_fd];
 
-    if (!client) {
-        // Handle case where client object is somehow missing (fatal error)
-        return;
-    }
+    // if (!client) {
+    //     // Handle case where client object is somehow missing (fatal error)
+    //     return;
+    // }
 
     char temp_buffer[1024];
 
@@ -129,31 +138,22 @@ void Server::handle_client_command(const int current_fd) {
         recv(current_fd, temp_buffer, sizeof(temp_buffer) - 1, 0);
 
     if (bytes_read == 0) {
-        // --- MANDATORY: Client Disconnect (Graceful Close) ---
-        std::cerr << "[LOG] Client FD " << current_fd << " disconnected gracefully."
-            << std::endl;
-        close(current_fd);
-        Client* client_to_delete = _clients[current_fd]; 
-        _nicknames.erase(client_to_delete->getNickname());
-        delete client_to_delete;
-        _clients.erase(current_fd);
+        disconnectClient(current_fd);
+        return true;
 
     } else if (bytes_read < 0) {
-        std::cerr << "Error in read" << std::endl;
+        if (errno == EWOULDBLOCK || errno == EAGAIN) {
+            return false; 
+        } else {
+            perror("Fatal Recv Error");
+            return true; 
+        }
     }
-    // EWOULDBLOCK or EAGAIN means no more data to read, which is NORMAL.
-    if (errno == EWOULDBLOCK || errno == EAGAIN) {
-        return;
-        // } else {
-        // A genuine connection error (e.g., connection reset). Treat as
-        // disconnect.
-        // perror("Recv error");
-        // disconnect_client(current_fd);
-        // }
-    } else {
+    else {
         temp_buffer[bytes_read] = '\0';
-        std::string temp = client->getReadBuffer().append(temp_buffer, bytes_read);
+        client->getReadBuffer().append(temp_buffer, bytes_read);
         client->process_and_extract_commands();
+    return false;
     }
 }
 
@@ -196,7 +196,7 @@ void Server::commandDispatcher(Client *client, std::string commandLine) {
     std::cout << "full cmd: " << commandLine << std::endl;
     switch (cmd) {
         case CMD_PASS:
-            handle_pass_command(client, splitedCommand); 
+            handlePassCommand(client, splitedCommand); 
             break;
         case CMD_NICK:
             handleNickCommand(client, splitedCommand);
@@ -215,35 +215,40 @@ void Server::commandDispatcher(Client *client, std::string commandLine) {
 void Server::run() {
 
     std::cerr << "[DEBUG] 4. Runing the server." << std::endl;
-
+    bool disconnected ;
     while (true) {
-        std::cerr <<  GREEN <<"Polling on " << _poll_fds.size() << " FDs."
+        std::cerr <<  GREEN <<"Polling on " << _pollFds.size() << " FDs."
             << std::endl;
-        int ret = poll(&_poll_fds[0], _poll_fds.size(), -1);
+        int ret = poll(&_pollFds[0], _pollFds.size(), -1);
         std::cerr << "Poll returned: " << ret << std::endl;
         if (ret < 0) {
             throw std::runtime_error("Poll fatal error");
         }
-        for (long unsigned int i = 0; i < _poll_fds.size(); ++i) {
-            int current_fd = _poll_fds[i].fd;
-
-            //TODO
-            // if (_poll_fds[i].revents & (POLLHUP | POLLERR)) {
-            //     // This MUST be the first check (or handle it inside the POLLIN block if recv returns 0)
-            //     disconnect_client(current_fd, i); // <-- Must pass index 'i' for vector erase
-            //     i--; // CRITICAL: Decrement the loop counter after erasing from vector
-            //     continue;
-            // }
-            
-            if (_poll_fds[i].revents & POLLIN) {
-                if (current_fd == _listener_fd)
-                    handle_new_connection();
+        for (long unsigned int i = 0; i < _pollFds.size(); ++i) {
+            disconnected = false;
+            int current_fd = _pollFds[i].fd;
+            if (_pollFds[i].revents & (POLLHUP | POLLERR)) {
+                std::cerr << "[LOG] Abrupt disconnect detected on FD " << current_fd << std::endl;
+                disconnected = true; 
+            }
+            else if (_pollFds[i].revents & POLLIN) {
+                if (current_fd == _listenerFd)
+                    handleNewConnection();
                 else
-                    handle_client_command(current_fd);
+                    disconnected = handleClientCommand(current_fd);
+            }
+            if (_pollFds[i].revents & POLLOUT){
+                disconnected = handleOutgoingData(current_fd);
+
+            }
+            if (disconnected) {
+                disconnectClient(current_fd); 
+                
+                _pollFds.erase(_pollFds.begin() + i); 
+                i--; 
+                continue;
             }
 
-            else if (_poll_fds[i].revents & POLLOUT)
-                handle_outgoing_data(current_fd);
         }
     }
 }
