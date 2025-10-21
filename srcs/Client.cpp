@@ -2,13 +2,13 @@
 #include <vector>
 
 Client::Client(int fd, Server* serverPtr)
-    : _fd(fd), _out_buffer(""), _registered(false), _nick_set(false),
-      _pass_set(false), _server_ptr(serverPtr) {}
+    : _fd(fd), _outBuffer(""), _registered(false), _nickSet(false),
+      _passSet(false), _serverPtr(serverPtr) {}
 
 //Get the commnad untile the /r/n return it and remove it from the buffer
 std::string Client::extractAndEraseFromBuffer(size_t pos_found) {
-  std::string toRetrun = _read_buffer.substr(0, pos_found);
-  _read_buffer = _read_buffer.substr(pos_found + 2);
+  std::string toRetrun = _readBuffer.substr(0, pos_found);
+  _readBuffer = _readBuffer.substr(pos_found + 2);
   return toRetrun;
 }
 
@@ -31,7 +31,7 @@ void Client::send_reply(const std::string &numeric,
 
 //Getters
 std::string &Client::getReadBuffer() {
-  return _read_buffer; 
+  return _readBuffer; 
 }
 
 int Client::getFd(){
@@ -43,11 +43,11 @@ bool Client::isRegistered() {
 }
 
 bool Client::getPassState(){
-  return _pass_set;
+  return _passSet;
 }
 
 bool Client::getUserState(){
-  return _user_set;
+  return _userSet;
 }
 
 std::string Client::getNickname() {
@@ -55,7 +55,7 @@ std::string Client::getNickname() {
 }
 
 std::string & Client::getOutBuffer(){
-    return _out_buffer;
+    return _outBuffer;
 }
 
 //Setters
@@ -64,19 +64,19 @@ void Client::setRegistration(){
 }
 
 void Client::setNickState(bool state){
-  _nick_set = state;
+  _nickSet = state;
 }
 
 void Client::setPassState(bool state){
-  _pass_set = state;
+  _passSet = state;
 }
 
 void Client::setUserState(bool state){
-  _user_set = state;
+  _userSet = state;
 }
 
 void Client::setPollOut(bool state){
-    std::vector<struct pollfd>& poll_fds = _server_ptr->getPollfds();
+    std::vector<struct pollfd>& poll_fds = _serverPtr->getPollfds();
     for (size_t i = 0; i < poll_fds.size(); ++i) {
 
         if (poll_fds[i].fd == _fd) {
@@ -92,11 +92,11 @@ void Client::setPollOut(bool state){
 }
     
 // retreave the commmand and its argument then run it 
-void Client::process_and_extract_commands() {
-  size_t pos_found = _read_buffer.find("\r\n");
+void Client::processAndExtractCommands() {
+  size_t pos_found = _readBuffer.find("\r\n");
   while (pos_found != std::string::npos) {
     std::string command_line = extractAndEraseFromBuffer(pos_found);
-    _server_ptr->Server::commandDispatcher(this, command_line);
-    pos_found = _read_buffer.find("\r\n");
+    _serverPtr->Server::commandDispatcher(this, command_line);
+    pos_found = _readBuffer.find("\r\n");
   }
 }

@@ -4,7 +4,6 @@ Server::Server(const int port, const std::string password)
     : _password(password), _port(port), _listenerFd(-1),
     _serverName("ft_irc.local") 
 {
-
     this->_commandMap["PASS"] = CMD_PASS;
     this->_commandMap["NICK"] = CMD_NICK;
     this->_commandMap["USER"] = CMD_USER;
@@ -47,15 +46,15 @@ std::vector<struct pollfd> & Server::getPollfds(){
     return _pollFds;
 }
 
-void Server::disconnectClient(int current_fd) {
-    std::cerr << RED << "[LOG] Client FD " << current_fd << " disconnected ."
-        << std::endl;
-    Client* client_to_delete = _clients[current_fd];
-    _clients.erase(current_fd);
-    close(current_fd);
-    _nicknames.erase(client_to_delete->getNickname());
-    delete client_to_delete;
+e_cmd_type Server::getCommandType(std::string command) {
+    
+    std::map<std::string, e_cmd_type>::iterator it = _commandMap.find(command);
 
+    if (it != _commandMap.end()) {
+        return it->second;
+    } else {
+        return CMD_UNKNOWN; 
+    }
 }
 
 bool Server::handleOutgoingData(int clientFd){
@@ -77,23 +76,13 @@ bool Server::handleOutgoingData(int clientFd){
         }
     }
     return false;
-
 }
 
 void Server::checkRegistration(Client * client){
   if (client->getPassState() && client->getUserState())
         client->setRegistration();
 }
-e_cmd_type Server::getCommandType(std::string command) {
-    
-    std::map<std::string, e_cmd_type>::iterator it = _commandMap.find(command);
 
-    if (it != _commandMap.end()) {
-        return it->second;
-    } else {
-        return CMD_UNKNOWN; 
-    }
-}
 // void Server::setAdress(const &std::string A) { _ip_adress = A; }
 
 void Server::handleNewConnection() {
@@ -133,12 +122,10 @@ bool Server::handleClientCommand(const int current_fd) {
     // }
 
     char temp_buffer[1024];
-
     ssize_t bytes_read =
         recv(current_fd, temp_buffer, sizeof(temp_buffer) - 1, 0);
 
     if (bytes_read == 0) {
-        disconnectClient(current_fd);
         return true;
 
     } else if (bytes_read < 0) {
@@ -152,7 +139,7 @@ bool Server::handleClientCommand(const int current_fd) {
     else {
         temp_buffer[bytes_read] = '\0';
         client->getReadBuffer().append(temp_buffer, bytes_read);
-        client->process_and_extract_commands();
+        client->processAndExtractCommands();
     return false;
     }
 }
@@ -212,6 +199,18 @@ void Server::commandDispatcher(Client *client, std::string commandLine) {
             break;
     }
 }
+
+void Server::disconnectClient(int current_fd) {
+    std::cerr << RED << "[LOG] Client FD " << current_fd << " disconnected ."
+        << std::endl;
+    Client* client_to_delete = _clients[current_fd];
+    _clients.erase(current_fd);
+    close(current_fd);
+    _nicknames.erase(client_to_delete->getNickname());
+    delete client_to_delete;
+
+}
+
 void Server::run() {
 
     std::cerr << "[DEBUG] 4. Runing the server." << std::endl;

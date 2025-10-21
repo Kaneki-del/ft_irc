@@ -14,8 +14,8 @@ public:
   // std::string _userName;
   std::string _realName;
 
-  void process_and_extract_commands();
-  std::string extractAndEraseFromBuffer(size_t pos_found);
+  void processAndExtractCommands();
+  std::string extractAndEraseFromBuffer(size_t posFound);
 
 
   std::string getNickname();
@@ -38,13 +38,13 @@ public:
 
 private:
   int _fd;
-  std::string _read_buffer;
-  std::string _out_buffer;
+  std::string _readBuffer;
+  std::string _outBuffer;
   bool _registered;
-  bool _nick_set;
-  bool _pass_set;
-  bool _user_set;
-  std::string _ip_address;
-  Server* _server_ptr;
+  bool _nickSet;
+  bool _passSet;
+  bool _userSet;
+  std::string _ipAddress;
+  Server* _serverPtr;
 };
 #endif
