@@ -9,6 +9,28 @@ std::string trim(const std::string &str) {
   return str.substr(first, (last - first + 1));
 }
 
+bool Server::isValidNickName(std::string nickname) {
+    //TODO check if this line is correct
+    if (nickname.empty() || nickname.length() < 1)
+        return false;
+    char first_char = nickname[0];
+    if (nickname.find(' ') != std::string::npos) {
+        return false;
+    }
+    if (first_char == '#' || first_char == ':' || std::isdigit(first_char))
+        return false;
+    
+    for (size_t i = 0; i < nickname.size(); i++) {
+        char c = nickname[i];
+        if (! (std::isalnum(c) || 
+               c == '[' || c == ']' || c == '{' || c == '}' || 
+               c == '\\' || c == '|')) 
+        {
+            return false;
+        }
+    }
+    return true; 
+}
 void Server::handlePassCommand(Client *client, std::vector<std::string>args){
   
   if (client->isRegistered()) {
@@ -36,28 +58,31 @@ void Server::handleNickCommand(Client *client, std::vector<std::string>args){
         client->send_reply("431", ":No nickname given");
         return;
   }
-
   if (client->isRegistered()) {
         client->send_reply("462", ":You may not reregister");
         return;
   }
-
-  std::string new_nick = args[1];
+  // std::cout << RED << "the new nich alredy used 1" << std::endl;
+  std::string new_nick = trim(args[1]);
+  // std::cout << "new nick: " << new_nick << std::endl;
   std::map<std::string, Client*>::iterator it = _nicknames.find(new_nick);
   if (it != _nicknames.end()) {
-    if (it->second == client){
-      client->send_reply("433", new_nick + ":Nickname is already in use");
+    if (it->second == client) {
+      std::cout << "[LOG] Nickname is unchanged and owned by client." << std::endl;
       return;
     }
+    client->send_reply("433", new_nick + " :Nickname is already in use");
+    return;
   }
-  // else if (!isValidNickName(nickname)){
-  //
-  // }
-  //
+  else if (!isValidNickName(new_nick)){
+      client->send_reply("432", new_nick + ":Erroneus nickname");
+      return;
+  }
   else{
       std::cout << GREEN 
         << "[SUCCESS] " << " Nick  successfully." << std::endl;
       client->_nickName = new_nick;
+      _nicknames[new_nick] = client;
       client->setNickState(true);
       checkRegistration(client);
   }

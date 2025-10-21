@@ -79,7 +79,7 @@ bool Server::handleOutgoingData(int clientFd){
 }
 
 void Server::checkRegistration(Client * client){
-  if (client->getPassState() && client->getUserState())
+  if (client->getPassState() && client->getUserState() && client->getNicknameState())
         client->setRegistration();
 }
 

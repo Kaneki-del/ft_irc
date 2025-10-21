@@ -58,6 +58,10 @@ std::string & Client::getOutBuffer(){
     return _outBuffer;
 }
 
+bool Client::getNicknameState(){
+  return _nickSet;
+}
+
 //Setters
 void Client::setRegistration(){
   _registered = true;

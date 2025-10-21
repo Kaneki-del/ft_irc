@@ -36,7 +36,7 @@ public:
   void commandDispatcher(Client *client, std::string commandLine);
   void checkRegistration(Client * client);
   bool handleOutgoingData(int clientFd);
-  // bool isValidNickName(std::string  nickname);
+  bool isValidNickName(std::string  nickname);
   e_cmd_type getCommandType(std::string command);
   std::vector<struct pollfd> & getPollfds();
   void disconnectClient(int currentFd);

@@ -24,6 +24,7 @@ public:
   std::string &getOutBuffer();
   bool isRegistered();
   bool getUserState();
+  bool getNicknameState();
   int getFd();
 
   void setRegistration();
