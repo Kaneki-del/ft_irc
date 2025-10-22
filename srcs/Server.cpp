@@ -7,6 +7,7 @@ Server::Server(const int port, const std::string password)
     this->_commandMap["PASS"] = CMD_PASS;
     this->_commandMap["NICK"] = CMD_NICK;
     this->_commandMap["USER"] = CMD_USER;
+    this->_commandMap["PRIVMSG"] = CMD_PRIVMSG;
 
     _listenerFd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
@@ -16,8 +17,8 @@ Server::Server(const int port, const std::string password)
     int opt_val = 1; 
     if (setsockopt(_listenerFd, SOL_SOCKET, SO_REUSEADDR, &opt_val, sizeof(opt_val)) < 0) {
         throw std::runtime_error("Socket creation failed.");
-    perror("setsockopt(SO_REUSEADDR) failed"); 
-}
+    // perror("setsockopt(SO_REUSEADDR) failed"); 
+    }
     fcntl(_listenerFd, F_SETFL, O_NONBLOCK);
 
     struct sockaddr_in serv_addr;
@@ -151,7 +152,7 @@ bool Server::handleClientCommand(const int current_fd) {
         if (errno == EWOULDBLOCK || errno == EAGAIN) {
             return false; 
         } else {
-            perror("Fatal Recv Error");
+            // perror("Fatal Recv Error");
             return true; 
         }
     }
@@ -208,6 +209,9 @@ void Server::commandDispatcher(Client *client, std::string commandLine) {
             handleNickCommand(client, splitedCommand);
             break;
         case CMD_USER:
+            handleUserCommand(client, splitedCommand);
+            break;
+        case CMD_PRIVMSG:
             handleUserCommand(client, splitedCommand);
             break;
         case CMD_UNKNOWN:

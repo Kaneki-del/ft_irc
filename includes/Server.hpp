@@ -20,16 +20,9 @@
 #include <arpa/inet.h>
 class Server;
 #include "Client.hpp"
-
-enum e_cmd_type {
-    CMD_UNKNOWN = 0,
-    CMD_PASS    = 1,
-    CMD_NICK    = 2,
-    CMD_USER    = 3,
-};
+#include "Command.hpp"
 
 class Server {
-
 public:
 
   Server(const int port, const std::string password);
@@ -41,6 +34,7 @@ public:
   e_cmd_type getCommandType(std::string command);
   std::vector<struct pollfd> & getPollfds();
   void disconnectClient(int currentFd);
+  void handlePivCommand(Client *client, std::vector<std::string>args); 
 
 private:
 
