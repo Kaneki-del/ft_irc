@@ -10,4 +10,5 @@
 - [x] ask in case of the user-name have space should we only take the first one ?
 - [ ] Check on each syscall for failure to do the right cleanup and message
 - [ ] is the user should have at least 4 parameters
-- [ ] other sending messages like welcome and the server is running 
+- [x] other sending messages like welcome and the server is running 
+- [ ] parse the port maybe also the password

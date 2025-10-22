@@ -24,6 +24,7 @@ Server::Server(const int port, const std::string password)
     std::memset(&serv_addr, 0, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(_port);
+
     if (bind(_listenerFd, (struct sockaddr *)&serv_addr,
              sizeof(serv_addr)) == -1) {
         std::cerr << "Error: Failed to bind socket to port " << _port << "."
@@ -33,7 +34,6 @@ Server::Server(const int port, const std::string password)
             "Fatal server initialization error (bind failed).");
     }
 
-    listen(_listenerFd, SOMAXCONN);
     if (listen(_listenerFd, SOMAXCONN) == -1) {
         close(_listenerFd);
         throw std::runtime_error("Listen failed.");
@@ -44,6 +44,9 @@ Server::Server(const int port, const std::string password)
     listener_poll_fd.events = POLLIN;
     listener_poll_fd.revents = 0;
     _pollFds.push_back(listener_poll_fd);
+    std::cerr << GREEN
+              << "[SERVER START] Operational on port " << _port 
+              << ". Waiting for connections..." << std::endl;
 }
 
 std::vector<struct pollfd> & Server::getPollfds(){
@@ -92,8 +95,6 @@ void Server::checkRegistration(Client * client){
         client->setRegistration();
     }
 }
-
-// void Server::setAdress(const &std::string A) { _ip_adress = A; }
 
 void Server::handleNewConnection() {
     struct sockaddr_in client_addr;
@@ -219,19 +220,21 @@ void Server::commandDispatcher(Client *client, std::string commandLine) {
 }
 
 void Server::disconnectClient(int current_fd) {
-    std::cerr << RED << "[LOG] Client FD " << current_fd << " disconnected ."
-        << std::endl;
-    Client* client_to_delete = _clients[current_fd];
-    _clients.erase(current_fd);
+    Client* clientToDelete = _clients[current_fd];
+    //TODO see if i need to protect this
+    std::cerr << RED
+        << "[DISCONNECT] Client disconnected."
+        << " Nickname: " << (clientToDelete->_nickName.empty() ? "(Unregistered)" 
+        : clientToDelete->_nickName) << " | FD: " << current_fd << std::endl;
+    _nicknames.erase(clientToDelete->getNickname());
     close(current_fd);
-    _nicknames.erase(client_to_delete->getNickname());
-    delete client_to_delete;
-
+    delete clientToDelete;
+    _clients.erase(current_fd);
 }
 
 void Server::run() {
+    
 
-    std::cerr << "[DEBUG] 4. Runing the server." << std::endl;
     bool disconnected ;
     while (true) {
         std::cerr <<  GREEN <<"Polling on " << _pollFds.size() << " FDs."
