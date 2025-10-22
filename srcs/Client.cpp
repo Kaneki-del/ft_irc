@@ -62,6 +62,10 @@ bool Client::getNicknameState(){
   return _nickSet;
 }
 
+const std::string & Client::getIpAddress() const{
+  return _ipAddrres;
+}
+
 //Setters
 void Client::setRegistration(){
   _registered = true;
@@ -77,6 +81,10 @@ void Client::setPassState(bool state){
 
 void Client::setUserState(bool state){
   _userSet = state;
+}
+
+void Client::setIpAddress(const std::string &addrr){
+  _ipAddrres = addrr;
 }
 
 void Client::setPollOut(bool state){

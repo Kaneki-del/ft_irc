@@ -83,8 +83,14 @@ bool Server::handleOutgoingData(int clientFd){
 }
 
 void Server::checkRegistration(Client * client){
-  if (client->getPassState() && client->getUserState() && client->getNicknameState())
+    if (client->getPassState() && client->getUserState() && client->getNicknameState())
+    {
+        std::string identity = client->_nickName + "!" + client->_userName +
+            "@" + client->getIpAddress(); 
+        std::string welcome_content = ":Welcome to the ft_irc.local Network, " + identity;
+        client->send_reply("001", welcome_content);
         client->setRegistration();
+    }
 }
 
 // void Server::setAdress(const &std::string A) { _ip_adress = A; }
@@ -97,11 +103,19 @@ void Server::handleNewConnection() {
     int new_client_fd =
         accept(_listenerFd, (struct sockaddr *)&client_addr, &addr_size);
     // TODO check later for fealure -1
-    //
-    //
+    char* ip_temp_ptr = inet_ntoa(client_addr.sin_addr);
+
     _clients[new_client_fd] = new Client(new_client_fd, this);
-    // TODO check if we need to stor the adress of the client
-    //  setAdress(client_addr);
+    if (ip_temp_ptr) {
+        // 2. CRITICAL STEP: Store the IP address in the Client object.
+        // We pass the string to the Client setter, which copies the data.
+        _clients[new_client_fd]->setIpAddress(std::string(ip_temp_ptr));
+
+        // The IP address is now safely stored inside Client::ip_address.
+    } else {
+        // Handle error if inet_ntoa somehow failed (shouldn't happen on a valid address)
+        // You can set a default IP like "0.0.0.0" or throw an error.
+    }
 
     if (fcntl(new_client_fd, F_SETFL, O_NONBLOCK) == -1) {
         // TODO true the apropriate error

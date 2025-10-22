@@ -6,6 +6,8 @@
 - [x] make function that do the cleanup when the client Close the connection
 - [x] parse the nick passed and see how to handle the errors
 - [x] check for the other authentication if they are respecting the codes
-- [x] ask for the case that i can send more that one arg like "PASS PASS password"
+- [x] ask for the case that i can send more that one args like "PASS PASS password"
 - [x] ask in case of the user-name have space should we only take the first one ?
-- [ ] check on each syscall for failure to do the right cleanup and message
+- [ ] Check on each syscall for failure to do the right cleanup and message
+- [ ] is the user should have at least 4 parameters
+- [ ] other sending messages like welcome and the server is running 
