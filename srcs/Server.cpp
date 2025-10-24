@@ -46,9 +46,22 @@ Server::Server(const int port, const std::string password)
     listener_poll_fd.revents = 0;
     _pollFds.push_back(listener_poll_fd);
     // create the client for the bot 
+    initialBot();
+
     std::cerr << GREEN
               << "[SERVER START] Operational on port " << _port 
               << ". Waiting for connections..." << std::endl;
+}
+
+void Server::initialBot(){
+    Client * bot = new Client(-1, this);
+    _clients[-1] = bot;
+    bot->_nickName = BOT_NAME;
+    bot->_userName = "BotUser"; 
+    bot->setIpAddress("127.0.0.1");
+    bot->setRegistration();
+    _nicknames[BOT_NAME] = bot;
+    std::cerr << "[BOT] Initialized as " << BOT_NAME << "!" << std::endl;
 }
 
 std::vector<struct pollfd> & Server::getPollfds(){

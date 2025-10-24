@@ -3,6 +3,7 @@
 
 #define GREEN    "\x1b[32m" 
 #define RED      "\x1b[31m"
+#define BOT_NAME "bot"
 
 #include <cerrno>
 #include <cstdlib>
@@ -37,6 +38,7 @@ public:
   std::vector<struct pollfd> & getPollfds();
   void disconnectClient(int currentFd);
   void handlePrivmsgCommand(Client *client, std::vector<std::string>args); 
+  void initialBot();
 
 private:
 
@@ -56,4 +58,8 @@ private:
   std::map<std::string, e_cmd_type> _commandMap;
 
 };
+void processBotCommand(Client * client,Client * bot_client, std::string & message);
+std::vector<std::string> split_string_to_vector(const std::string &input_string,
+                                                char delimiter);
+
 #endif

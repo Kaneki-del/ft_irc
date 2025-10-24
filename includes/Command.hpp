@@ -1,6 +1,8 @@
 #ifndef COMMAND_HPP
-
 #define COMMAND_HPP
+
+
+//server command
 enum e_cmd_type {
   CMD_UNKNOWN = 0,
   CMD_PASS    = 1,
@@ -8,4 +10,15 @@ enum e_cmd_type {
   CMD_USER    = 3,
   CMD_PRIVMSG  = 4,
 };
+
+//bot command
+enum e_cmd_bot_type {
+    BOT_CMD_HELP    = 0, // Displays available commands
+    BOT_CMD_TIME    = 1, // Displays the server time
+    BOT_CMD_UPTIME  = 2, // Displays how long the server has been running
+    BOT_CMD_PING  = 3, // Displays how long the server has been running
+    BOT_CMD_UNKNOWN = 4, // Mandatory default for unrecognized commands
+};
+
+
 #endif // !COMMAND_HPP

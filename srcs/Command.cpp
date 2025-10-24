@@ -9,7 +9,35 @@ void Server::handlePrivmsgCommand(Client *client, std::vector<std::string>args){
     client->send_reply("412", ":No text to send");
     return;
   }
-  //if the target is the bot handle it in ist own 
+  std::string target = args[1];
+  std::string message = args[2];
+  if (target == BOT_NAME)
+  {
+    std::map<std::string, Client*>::iterator it = _nicknames.find(BOT_NAME);
+    if (it != _nicknames.end()) {
+      Client *bot_client = it->second; 
+      processBotCommand(client, bot_client, message); 
+      return;
+    }
+    else {
+      std::cerr << "[ERROR] Bot not found in map, skipping command dispatch." << std::endl;
+      client->send_reply("401", "bot :No such nick/channel");
+      return;
+    }
+  }
+  else
+  {
+    std::map<std::string, Client*>::iterator it = _nicknames.find(target);
+    if (it != _nicknames.end()) {
+      Client *senderClient = it->second; 
+      //fucntion to send the message
+      return;
+    }
+    else
+      //send that the client is not found
+      //TODO handle the chanle
+  }
+
   //else check if the client target is in the map then send it to it
   //if not check if i need to send specific msg
 }
