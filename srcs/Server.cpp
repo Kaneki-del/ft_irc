@@ -14,10 +14,11 @@ Server::Server(const int port, const std::string password)
         throw std::runtime_error("Socket creation failed.");
     }
     int opt_val = 1; 
-    if (setsockopt(_listenerFd, SOL_SOCKET, SO_REUSEADDR, &opt_val, sizeof(opt_val)) < 0) {
+    if (setsockopt(_listenerFd, SOL_SOCKET, SO_REUSEADDR, &opt_val,
+                   sizeof(opt_val)) < 0) {
         throw std::runtime_error("Socket creation failed.");
-    perror("setsockopt(SO_REUSEADDR) failed"); 
-}
+        perror("setsockopt(SO_REUSEADDR) failed"); 
+    }
     fcntl(_listenerFd, F_SETFL, O_NONBLOCK);
 
     struct sockaddr_in serv_addr;
@@ -44,6 +45,7 @@ Server::Server(const int port, const std::string password)
     listener_poll_fd.events = POLLIN;
     listener_poll_fd.revents = 0;
     _pollFds.push_back(listener_poll_fd);
+    // create the client for the bot 
     std::cerr << GREEN
               << "[SERVER START] Operational on port " << _port 
               << ". Waiting for connections..." << std::endl;
@@ -199,6 +201,16 @@ void Server::commandDispatcher(Client *client, std::string commandLine) {
     }
     std::string command = splitedCommand[0];
     e_cmd_type cmd = this->getCommandType(command);
+    if (cmd == CMD_UNKNOWN){
+            client->send_reply("421" , command + " :Unknown command");
+            return;
+    }
+    if (cmd != CMD_PASS && cmd != CMD_NICK && cmd != CMD_USER) {
+        if (!client->isRegistered()) {
+            client->send_reply("451",":You have not registered");
+            return; 
+        }
+    }
     std::cout << "full cmd: " << commandLine << std::endl;
     switch (cmd) {
         case CMD_PASS:
@@ -210,11 +222,10 @@ void Server::commandDispatcher(Client *client, std::string commandLine) {
         case CMD_USER:
             handleUserCommand(client, splitedCommand);
             break;
-        case CMD_UNKNOWN:
-            // ... implementation
+        case CMD_PRIVMSG:
+            handlePrivmsgCommand(client, splitedCommand);
             break;
-
-            client->send_reply("421", /* command verb */ + " :Unknown command"); 
+        default:
             break;
     }
 }

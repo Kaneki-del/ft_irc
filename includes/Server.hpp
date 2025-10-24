@@ -14,6 +14,7 @@
 #include <poll.h>
 #include <sstream>
 #include <string>
+#include "Command.hpp"
 #include <sys/socket.h>
 #include <unistd.h>
 #include <vector>
@@ -21,12 +22,6 @@
 class Server;
 #include "Client.hpp"
 
-enum e_cmd_type {
-    CMD_UNKNOWN = 0,
-    CMD_PASS    = 1,
-    CMD_NICK    = 2,
-    CMD_USER    = 3,
-};
 
 class Server {
 
@@ -41,6 +36,7 @@ public:
   e_cmd_type getCommandType(std::string command);
   std::vector<struct pollfd> & getPollfds();
   void disconnectClient(int currentFd);
+  void handlePrivmsgCommand(Client *client, std::vector<std::string>args); 
 
 private:
 

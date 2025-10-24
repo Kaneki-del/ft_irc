@@ -87,7 +87,7 @@ void Server::handleNickCommand(Client *client, std::vector<std::string>args){
 
 void Server::handleUserCommand(Client *client, std::vector<std::string>args){
   if (args.size() < 4 || trim(args[1]).empty()) { 
-    client->send_reply("461", " :Not enough parameters");
+    client->send_reply("461", ":Not enough parameters");
     return;
   }
   if (client->isRegistered()) {
