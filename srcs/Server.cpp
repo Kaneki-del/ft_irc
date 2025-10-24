@@ -239,7 +239,7 @@ void Server::commandDispatcher(Client *client, std::string commandLine) {
             handleUserCommand(client, splitedCommand);
             break;
         case CMD_PRIVMSG:
-            handleUserCommand(client, splitedCommand);
+            handlePrivmsgCommand(client, splitedCommand);
             break;
         default:
             break;
