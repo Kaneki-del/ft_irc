@@ -23,6 +23,7 @@
 class Server;
 #include "Client.hpp"
 #include "Command.hpp"
+#include "Command.hpp"
 
 class Server {
 public:
