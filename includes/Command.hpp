@@ -1,8 +1,6 @@
 #ifndef COMMAND_HPP
 #define COMMAND_HPP
 
-
-//server command
 enum e_cmd_type {
   CMD_UNKNOWN = 0,
   CMD_PASS    = 1,

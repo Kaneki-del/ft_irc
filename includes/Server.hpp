@@ -22,10 +22,9 @@
 #include <arpa/inet.h>
 class Server;
 #include "Client.hpp"
-
+#include "Command.hpp"
 
 class Server {
-
 public:
 
   Server(const int port, const std::string password);

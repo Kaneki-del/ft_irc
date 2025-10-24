@@ -7,6 +7,7 @@ Server::Server(const int port, const std::string password)
     this->_commandMap["PASS"] = CMD_PASS;
     this->_commandMap["NICK"] = CMD_NICK;
     this->_commandMap["USER"] = CMD_USER;
+    this->_commandMap["PRIVMSG"] = CMD_PRIVMSG;
 
     _listenerFd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
@@ -166,7 +167,7 @@ bool Server::handleClientCommand(const int current_fd) {
         if (errno == EWOULDBLOCK || errno == EAGAIN) {
             return false; 
         } else {
-            perror("Fatal Recv Error");
+            // perror("Fatal Recv Error");
             return true; 
         }
     }
@@ -236,7 +237,7 @@ void Server::commandDispatcher(Client *client, std::string commandLine) {
             handleUserCommand(client, splitedCommand);
             break;
         case CMD_PRIVMSG:
-            handlePrivmsgCommand(client, splitedCommand);
+            handleUserCommand(client, splitedCommand);
             break;
         default:
             break;

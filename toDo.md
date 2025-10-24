@@ -12,3 +12,5 @@
 - [ ] is the user should have at least 4 parameters
 - [x] other sending messages like welcome and the server is running 
 - [ ] parse the port maybe also the password
+- [ ] create the private command handler 
+- [ ] implement the bot function handler

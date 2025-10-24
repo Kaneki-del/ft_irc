@@ -37,7 +37,5 @@ void Server::handlePrivmsgCommand(Client *client, std::vector<std::string>args){
       //send that the client is not found
       //TODO handle the chanle
   }
-
-  //else check if the client target is in the map then send it to it
-  //if not check if i need to send specific msg
 }
+
