@@ -15,8 +15,7 @@ void Server::handlePrivmsgCommand(Client *client, std::vector<std::string>args){
   {
     std::map<std::string, Client*>::iterator it = _nicknames.find(BOT_NAME);
     if (it != _nicknames.end()) {
-      Client *bot_client = it->second; 
-      processBotCommand(client, bot_client, message); 
+      processBotCommand(client, message); 
       return;
     }
     else {
@@ -30,12 +29,16 @@ void Server::handlePrivmsgCommand(Client *client, std::vector<std::string>args){
     std::map<std::string, Client*>::iterator it = _nicknames.find(target);
     if (it != _nicknames.end()) {
       Client *senderClient = it->second; 
-      //fucntion to send the message
+      std::string messageee =  "PRIVMSG " + senderClient->_nickName + " :" + message + "\r\n" ;
+      std::cout << "outgoing message: " << messageee << std::endl;
+      send(senderClient->getFd(), messageee.c_str(), messageee.length(), 0);
       return;
     }
     else
-      //send that the client is not found
-      //TODO handle the chanle
+    {
+      std::cout << "no client found" << std::endl;
+      return;
+    }
   }
 }
 

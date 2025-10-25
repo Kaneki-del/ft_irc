@@ -24,7 +24,7 @@ void Client::send_reply(const std::string &numeric,
   }
 
   std::string full_message = prefix + " " + numeric + " " + recipient + " " + content;
-
+  std::cout << "full message: " << full_message << std::endl;
   this->getOutBuffer().append(full_message + "\r\n");
   this->setPollOut(true);
 }

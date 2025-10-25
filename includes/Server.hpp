@@ -58,7 +58,7 @@ private:
   std::map<std::string, e_cmd_type> _commandMap;
 
 };
-void processBotCommand(Client * client,Client * bot_client, std::string & message);
+void processBotCommand(Client * client, std::string & message);
 std::vector<std::string> split_string_to_vector(const std::string &input_string,
                                                 char delimiter);
 

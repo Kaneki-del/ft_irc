@@ -14,3 +14,4 @@
 - [ ] parse the port maybe also the password
 - [ ] create the private command handler 
 - [ ] implement the bot function handler
+- [ ] implement the send helper function for the private msg
