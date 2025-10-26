@@ -19,8 +19,7 @@ void HelpCmd(Client *Sendclient, std::vector<std::string> arguments){
   if (arguments.size() > 2)
   {
     Sendclient->send_reply("NOTICE",
-                           "Syntax Error: Too many arguments for the Bot command.\
-    Use help for command list.");
+                           "Syntax Error: Too many arguments for the Bot command. Use help for command list.");
     return;
   }
   std::string message;
@@ -42,17 +41,61 @@ void HelpCmd(Client *Sendclient, std::vector<std::string> arguments){
 
 }
 
-// void timeCmd(Client *Sendclient, Client * bot_client,
-//              std::vector<std::string> arguments){
-//   if (arguments.size() > 2)
-//   {
-//     Sendclient->send_reply("NOTICE",
-//                            "Syntax Error: Too many arguments for the Bot command.\
-//     Use help for command list.");
-//     return;
-//   }
-//
-// }
+void timeCmd(Client *Sendclient, std::vector<std::string> arguments){
+  if (arguments.size() > 2)
+  {
+    Sendclient->send_reply("NOTICE",
+                           "Syntax Error: Too many arguments for the Bot command. Use help for command list.");
+    return;
+  }
+  std::string message;
+
+  time_t RawSeconds;
+  time(&RawSeconds);
+  struct tm *TimeInfo = localtime(&RawSeconds);
+  char TimeBuffer[100];
+  size_t len = strftime(TimeBuffer, sizeof(TimeBuffer), 
+                      "Current server time: %H:%M:%S on %Y-%m-%d", 
+                      TimeInfo);
+  if (len > 0)
+  {
+    message =  "PRIVMSG " + Sendclient->_nickName + " :" + TimeBuffer + "\r\n" ;
+    std::cout << "message from the bot: " << message << std::endl;
+    send(Sendclient->getFd(), message.c_str(), message.length(), 0);
+
+  }
+}
+
+void UpTimeCmd(Client *Sendclient, std::vector<std::string> arguments){
+  if (arguments.size() > 2)
+  {
+    Sendclient->send_reply("NOTICE",
+                           "Syntax Error: Too many arguments for the Bot command. Use help for command list.");
+    return;
+  }
+  time_t current_time = time(NULL);
+  time_t start_time = Sendclient->getServerPtr()->getStartTime();
+  time_t uptime_seconds = current_time - start_time;
+  if (uptime_seconds < 0) {
+        return;
+  }
+  long days = uptime_seconds / (24 * 3600);
+  long hours = (uptime_seconds % (24 * 3600)) / 3600;
+  long minutes = (uptime_seconds % 3600) / 60;
+  long seconds = uptime_seconds % 60;
+std::stringstream ss;
+    ss << "Server Uptime: ";
+    if (days > 0) {
+        ss << days << " day" << (days > 1 ? "s" : "") << ", ";
+    }
+    ss << hours << " hour" << (hours != 1 ? "s" : "") << ", ";
+    ss << minutes << " minute" << (minutes != 1 ? "s" : "") << ", ";
+    ss << seconds << " second" << (seconds != 1 ? "s" : "") << ".";
+    std::string RespodMessage = ss.str();
+  std::string message =  "PRIVMSG " + Sendclient->_nickName + " :" + RespodMessage + "\r\n" ;
+    std::cout << "message from the bot: " << message << std::endl;
+    send(Sendclient->getFd(), message.c_str(), message.length(), 0);
+}
 
 void processBotCommand(Client * client, std::string & message){
   std::vector<std::string> splitedCommand =
@@ -75,10 +118,10 @@ void processBotCommand(Client * client, std::string & message){
         HelpCmd(client, splitedCommand);
       break;
     case BOT_CMD_TIME:
-        // TimeCmd(client, bot_client, splitedCommand);
+        timeCmd(client, splitedCommand);
       break;
     case BOT_CMD_UPTIME:
-      // Execute logic to retrieve and send the server's duration.
+        UpTimeCmd(client, splitedCommand);
       break;
     case BOT_CMD_PING:
       // Execute logic to retrieve and send the server's duration.

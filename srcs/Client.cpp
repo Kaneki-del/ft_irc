@@ -30,6 +30,10 @@ void Client::send_reply(const std::string &numeric,
 }
 
 //Getters
+Server* Client::getServerPtr() const{
+  return _serverPtr;
+}
+
 std::string &Client::getReadBuffer() {
   return _readBuffer; 
 }

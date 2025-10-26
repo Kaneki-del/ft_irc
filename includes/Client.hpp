@@ -27,6 +27,7 @@ public:
   bool getNicknameState();
   int getFd();
   const std::string & getIpAddress() const ;
+  Server* getServerPtr() const;
 
   void setRegistration();
   void setPassState(bool state);

@@ -2,7 +2,7 @@
 
 Server::Server(const int port, const std::string password)
     : _password(password), _port(port), _listenerFd(-1),
-    _serverName("ft_irc.local") 
+    _serverName("ft_irc.local"), _StartTime(time(NULL))
 {
     this->_commandMap["PASS"] = CMD_PASS;
     this->_commandMap["NICK"] = CMD_NICK;
@@ -19,7 +19,7 @@ Server::Server(const int port, const std::string password)
     if (setsockopt(_listenerFd, SOL_SOCKET, SO_REUSEADDR, &opt_val,
                    sizeof(opt_val)) < 0) {
         throw std::runtime_error("Socket creation failed.");
-        perror("setsockopt(SO_REUSEADDR) failed"); 
+        // perror("setsockopt(SO_REUSEADDR) failed"); 
     }
     fcntl(_listenerFd, F_SETFL, O_NONBLOCK);
 
@@ -257,6 +257,10 @@ void Server::disconnectClient(int current_fd) {
     close(current_fd);
     delete clientToDelete;
     _clients.erase(current_fd);
+}
+
+time_t Server::getStartTime() const {
+    return _StartTime;
 }
 
 void Server::run() {

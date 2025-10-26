@@ -8,6 +8,7 @@
 #include <cerrno>
 #include <cstdlib>
 #include <cstring>
+#include <ctime>
 #include <fcntl.h>
 #include <iostream>
 #include <map>
@@ -39,6 +40,7 @@ public:
   void disconnectClient(int currentFd);
   void handlePrivmsgCommand(Client *client, std::vector<std::string>args); 
   void initialBot();
+  time_t getStartTime() const ;
 
 private:
 
@@ -56,6 +58,7 @@ private:
   std::map<int, Client *> _clients;
   std::map<std::string, Client *> _nicknames;
   std::map<std::string, e_cmd_type> _commandMap;
+  time_t _StartTime;
 
 };
 void processBotCommand(Client * client, std::string & message);
