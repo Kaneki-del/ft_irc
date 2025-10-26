@@ -1,4 +1,5 @@
 #include "../includes/Server.hpp"
+#include <string>
 
 e_cmd_bot_type getCmdTtype(const std::string & cmdName)
 {
@@ -16,40 +17,33 @@ e_cmd_bot_type getCmdTtype(const std::string & cmdName)
 }
 
 void HelpCmd(Client *Sendclient, std::vector<std::string> arguments){
-  if (arguments.size() > 2)
+  std::string message;
+  if (arguments.size() > 1)
   {
-    // Sendclient->send_reply("NOTICE",
-    //                        "Syntax Error: Too many arguments for the Bot command. Use help for command list.");
+    message = "Syntax Error: Too many arguments for the Bot command. Use help for command list.";
+    Sendclient->SendPrivateMessage(message);
     return;
   }
-  std::string message;
-  std::vector<std::string> help_messages;
-  help_messages.push_back("-- FTBot Command List --");
+  std::vector<std::string> HelpMessages;
+  HelpMessages.push_back("-- FTBot Command List --");
+  HelpMessages.push_back("help :Displays this command list.");
+  HelpMessages.push_back("time :Displays the current server time and date.");
+  HelpMessages.push_back("uptime :Shows how long the IRC server process has been running.");
+  HelpMessages.push_back("ping <nick> : Checks if a specified user is currently connected (Network state lookup).");
+  HelpMessages.push_back("------------------------");
 
-  help_messages.push_back("help :Displays this command list.");
-  help_messages.push_back("time :Displays the current server time and date.");
-  help_messages.push_back("uptime :Shows how long the IRC server process has been running.");
-
-  help_messages.push_back("ping <nick> : Checks if a specified user is currently connected (Network state lookup).");
-  help_messages.push_back("------------------------");
-
-  for (size_t i = 0; i < help_messages.size(); i++)
-  {
-      message =  "PRIVMSG " + Sendclient->GetNickName() + " :" + help_messages[i] + "\r\n" ;
-      send(Sendclient->GetFd(), message.c_str(), message.length(), 0);
-  }
-
+  for (size_t i = 0; i < HelpMessages.size(); i++)
+    Sendclient->SendPrivateMessage(HelpMessages[i]);
 }
 
 void timeCmd(Client *Sendclient, std::vector<std::string> arguments){
+   std::string message;
   if (arguments.size() > 1)
   {
-    std::string buffer = "Syntax Error: Too many arguments for the Bot command. Use help for command list.";
-    std::string messages =  "PRIVMSG " + Sendclient->GetNickName() + " :" + buffer + "\r\n" ;
-    send(Sendclient->GetFd(), messages.c_str(), messages.length(), 0);
+     message = "Syntax Error: Too many arguments for the Bot command. Use help for command list.";
+    Sendclient->SendPrivateMessage(message);
     return;
   }
-  std::string message;
 
   time_t RawSeconds;
   time(&RawSeconds);
@@ -59,20 +53,15 @@ void timeCmd(Client *Sendclient, std::vector<std::string> arguments){
                       "Current server time: %H:%M:%S on %Y-%m-%d", 
                       TimeInfo);
   if (len > 0)
-  {
-    message =  "PRIVMSG " + Sendclient->GetNickName() + " :" + TimeBuffer + "\r\n" ;
-    std::cout << "message from the bot: " << message << std::endl;
-    send(Sendclient->GetFd(), message.c_str(), message.length(), 0);
-
-  }
+    Sendclient->SendPrivateMessage(TimeBuffer);
 }
 
 void UpTimeCmd(Client *Sendclient, std::vector<std::string> arguments){
+  std::string message;
   if (arguments.size() > 1)
   {
-    std::string buffer = "Syntax Error: Too many arguments for the Bot command. Use help for command list.";
-    std::string messages =  "PRIVMSG " + Sendclient->GetNickName() + " :" + buffer + "\r\n" ;
-    send(Sendclient->GetFd(), messages.c_str(), messages.length(), 0);
+    message = "Syntax Error: Too many arguments for the Bot command. Use help for command list.";
+    Sendclient->SendPrivateMessage(message);
     return;
   }
   time_t current_time = time(NULL);
@@ -85,7 +74,7 @@ void UpTimeCmd(Client *Sendclient, std::vector<std::string> arguments){
   long hours = (uptime_seconds % (24 * 3600)) / 3600;
   long minutes = (uptime_seconds % 3600) / 60;
   long seconds = uptime_seconds % 60;
-std::stringstream ss;
+  std::stringstream ss;
     ss << "Server Uptime: ";
     if (days > 0) {
         ss << days << " day" << (days > 1 ? "s" : "") << ", ";
@@ -94,9 +83,7 @@ std::stringstream ss;
     ss << minutes << " minute" << (minutes != 1 ? "s" : "") << ", ";
     ss << seconds << " second" << (seconds != 1 ? "s" : "") << ".";
     std::string RespodMessage = ss.str();
-  std::string message =  "PRIVMSG " + Sendclient->GetNickName() + " :" + RespodMessage + "\r\n" ;
-    std::cout << "message from the bot: " << message << std::endl;
-    send(Sendclient->GetFd(), message.c_str(), message.length(), 0);
+    Sendclient->SendPrivateMessage(RespodMessage);
 }
 
 void processBotCommand(Client * client, std::string & message){
@@ -108,16 +95,13 @@ void processBotCommand(Client * client, std::string & message){
   if (splitedCommand.empty()) {
     return; 
   }
-  else if (splitedCommand.size() > 3)
+  else if (splitedCommand.size() > 2)
   {
-    std::string buffer = "Syntax Error: Too many arguments for the Bot command. Use help for command list.";
-    std::string messages =  "PRIVMSG " + client->GetNickName() + " :" + buffer + "\r\n" ;
-    send(client->GetFd(), messages.c_str(), messages.length(), 0);
+    message = "Syntax Error: Too many arguments for the Bot command. Use help for command list.";
+    client->SendPrivateMessage(message);
     return;
   }
-
   e_cmd_bot_type cmdType = getCmdTtype(splitedCommand[0]) ;
-
   switch (cmdType) {
     case BOT_CMD_HELP:
         HelpCmd(client, splitedCommand);

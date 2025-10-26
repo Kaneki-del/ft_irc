@@ -29,6 +29,12 @@ void Client::SendReply(const std::string &numeric,
   this->SetPollOut(true);
 }
 
+void Client::SendPrivateMessage(const std::string &Message){
+    std::string FullMessage =  "PRIVMSG " + GetNickName() + " :" + Message + "\r\n" ;
+    this->GetOutBuffer().append(FullMessage + "\r\n");
+    this->SetPollOut(true);
+}
+
 //Getters
 Server* Client::GetServerPtr() const{
   return _ServerPtr;

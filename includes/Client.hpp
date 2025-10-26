@@ -38,6 +38,7 @@ public:
   void SetUserName(const std::string& User);
 
   void SendReply(const std::string &Numeric, const std::string &Content);
+  void SendPrivateMessage(const std::string &Message);
 private:
 
   int _Fd;
