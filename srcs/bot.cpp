@@ -42,10 +42,11 @@ void HelpCmd(Client *Sendclient, std::vector<std::string> arguments){
 }
 
 void timeCmd(Client *Sendclient, std::vector<std::string> arguments){
-  if (arguments.size() > 2)
+  if (arguments.size() > 1)
   {
-    Sendclient->send_reply("NOTICE",
-                           "Syntax Error: Too many arguments for the Bot command. Use help for command list.");
+    std::string buffer = "Syntax Error: Too many arguments for the Bot command. Use help for command list.";
+    std::string messages =  "PRIVMSG " + Sendclient->_nickName + " :" + buffer + "\r\n" ;
+    send(Sendclient->getFd(), messages.c_str(), messages.length(), 0);
     return;
   }
   std::string message;
@@ -67,10 +68,11 @@ void timeCmd(Client *Sendclient, std::vector<std::string> arguments){
 }
 
 void UpTimeCmd(Client *Sendclient, std::vector<std::string> arguments){
-  if (arguments.size() > 2)
+  if (arguments.size() > 1)
   {
-    Sendclient->send_reply("NOTICE",
-                           "Syntax Error: Too many arguments for the Bot command. Use help for command list.");
+    std::string buffer = "Syntax Error: Too many arguments for the Bot command. Use help for command list.";
+    std::string messages =  "PRIVMSG " + Sendclient->_nickName + " :" + buffer + "\r\n" ;
+    send(Sendclient->getFd(), messages.c_str(), messages.length(), 0);
     return;
   }
   time_t current_time = time(NULL);
@@ -101,13 +103,16 @@ void processBotCommand(Client * client, std::string & message){
   std::vector<std::string> splitedCommand =
     split_string_to_vector(message, ' ');
 
+  // for (size_t i; i < splitedCommand.size(); i++)
+  //   std::cout << splitedCommand[i] << std::endl;
   if (splitedCommand.empty()) {
     return; 
   }
-  else if (splitedCommand.size() > 2)
+  else if (splitedCommand.size() > 3)
   {
-    client->send_reply("NOTICE",
-                  ":Syntax Error: Too many arguments for the Bot commands.");
+    std::string buffer = "Syntax Error: Too many arguments for the Bot command. Use help for command list.";
+    std::string messages =  "PRIVMSG " + client->_nickName + " :" + buffer + "\r\n" ;
+    send(client->getFd(), messages.c_str(), messages.length(), 0);
     return;
   }
 

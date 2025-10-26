@@ -15,3 +15,5 @@
 - [ ] create the private command handler 
 - [ ] implement the bot function handler
 - [ ] implement the send helper function for the private msg
+- [ ] imlement the ping function
+- [ ] see with freind if it is needed to have bot seprate 
