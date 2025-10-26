@@ -41,6 +41,7 @@ public:
   void handlePrivmsgCommand(Client *client, std::vector<std::string>args); 
   void initialBot();
   time_t getStartTime() const ;
+  std::map<std::string, Client *> GetNickNames() const;
 
 private:
 

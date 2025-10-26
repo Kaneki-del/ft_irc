@@ -66,6 +66,9 @@ void Server::initialBot(){
     std::cerr << "[BOT] Initialized as " << BOT_NAME << "!" << std::endl;
 }
 
+std::map<std::string, Client *> Server::GetNickNames() const{
+    return _nicknames;
+}
 std::vector<struct pollfd> & Server::getPollfds(){
     return _pollFds;
 }

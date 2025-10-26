@@ -12,8 +12,8 @@
 - [ ] is the user should have at least 4 parameters
 - [x] other sending messages like welcome and the server is running 
 - [ ] parse the port maybe also the password
-- [ ] create the private command handler 
-- [ ] implement the bot function handler
-- [ ] implement the send helper function for the private msg
-- [ ] imlement the ping function
-- [ ] see with freind if it is needed to have bot seprate 
+- [x] create the private command handler 
+- [x] implement the bot function handler
+- [x] implement the send helper function for the private msg
+- [ ] implement the ping function
+- [ ] see with friend if it is needed to have bot separated  

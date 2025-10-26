@@ -86,6 +86,32 @@ void UpTimeCmd(Client *Sendclient, std::vector<std::string> arguments){
     Sendclient->SendPrivateMessage(RespodMessage);
 }
 
+void PingCmd(Client *Sendclient, std::vector<std::string> arguments){
+
+  for (size_t i= 0; i < arguments.size(); i++)
+       std::cout << "arg: " << i << arguments[i] << std::endl;
+  std::string message;
+  if (arguments.size() < 2)
+  {
+    std::cout << "the ping command is found 1" << std::endl;
+    message = "Error: !PING command requires a target nickname. Usage: !ping <nickname>.";
+    Sendclient->SendPrivateMessage(message);
+    return;
+  }
+  std::cout << "the ping command is found" << std::endl;
+  std::string TargetClient = arguments[1];
+  std::map<std::string, Client *> nicknames = Sendclient->GetServerPtr()->GetNickNames();
+  std::map<std::string, Client*>::iterator it = nicknames.find(TargetClient);
+  if (it != nicknames.end()) {
+    std::string confirmation_msg = TargetClient + " is currently active on the network.";
+    Sendclient->SendPrivateMessage(confirmation_msg);
+  }
+  else {
+    std::string error_msg = TargetClient + " is not connected to this server.";
+    Sendclient->SendPrivateMessage(error_msg);
+  }
+}
+
 void processBotCommand(Client * client, std::string & message){
   std::vector<std::string> splitedCommand =
     split_string_to_vector(message, ' ');
@@ -113,10 +139,11 @@ void processBotCommand(Client * client, std::string & message){
         UpTimeCmd(client, splitedCommand);
       break;
     case BOT_CMD_PING:
-      // Execute logic to retrieve and send the server's duration.
+        PingCmd(client, splitedCommand);
       break;
     case BOT_CMD_UNKNOWN:
-      // Send error reply: "!Unknown command. Use !help."
+      std::string message = splitedCommand[0] + "is not a recognized command. Use help for a list of available commands.";
+      client->SendPrivateMessage(message);
       break;
     // ...
   }
