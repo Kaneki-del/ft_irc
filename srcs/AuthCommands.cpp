@@ -32,38 +32,38 @@ bool Server::isValidNickName(std::string nickname) {
 
 void Server::handlePassCommand(Client *client, std::vector<std::string>args){
   if (args.size() < 2 || trim(args[1]).empty()) { 
-        client->send_reply("461", "PASS :Not enough parameters");
+        client->SendReply("461", "PASS :Not enough parameters");
         return; 
   }
-  if (client->isRegistered()) {
-        client->send_reply("462", ":You may not reregister");
+  if (client->IsRegistered()) {
+        client->SendReply("462", ":You may not reregister");
         return;
   }
   std::string client_password = trim(args[1]);
   std::cout << "the password the client send *" << client_password << "*" <<  std::endl;
   if (_password == client_password){
-    client->setPassState(true); 
+    client->SetPassState(true); 
     std::cout << GREEN 
       << "[SUCCESS] " << " authenticated password successfully." << std::endl;
   }
   else
-    client->send_reply("464", ":Password incorrect");
+    client->SendReply("464", ":Password incorrect");
 }
 
 void Server::handleNickCommand(Client *client, std::vector<std::string>args){
   if (args.size() < 2 || trim(args[1]).empty()) { // Check argument existence AND trimmed emptiness
-        client->send_reply("431", ":No nickname given");
+        client->SendReply("431", ":No nickname given");
         return;
     }
-  // if (client->isRegistered()) {
-  //       client->send_reply("462", ":You may not reregister");
+  // if (client->IsRegistered()) {
+  //       client->SendReply("462", ":You may not reregister");
   //       return;
   // }
   std::string new_nick = trim(args[1]);
-  std::string old_nick = client->getNickname();
+  std::string old_nick = client->GetNickName();
   std::cout << "old_nick: " << old_nick << std::endl;
   if (!isValidNickName(new_nick)){
-      client->send_reply("432", new_nick + ":Erroneus nickname");
+      client->SendReply("432", new_nick + ":Erroneus nickname");
       return;
   }
 
@@ -71,35 +71,35 @@ void Server::handleNickCommand(Client *client, std::vector<std::string>args){
   if (it != _nicknames.end()) {
     if (it->second == client)
       return; 
-    client->send_reply("433", new_nick + " :Nickname is already in use");
+    client->SendReply("433", new_nick + " :Nickname is already in use");
     return;
   }
   if (!old_nick.empty()) {
         _nicknames.erase(old_nick);
         // Logic to broadcast the NICK change message to network
   }
-  client->_nickName = new_nick;
+  client->SetNickname(new_nick) ;
   _nicknames[new_nick] = client;
-  client->setNickState(true);
-  if (!client->isRegistered())
+  client->SetNickState(true);
+  if (!client->IsRegistered())
       checkRegistration(client); 
 }
 
 void Server::handleUserCommand(Client *client, std::vector<std::string>args){
   if (args.size() < 4 || trim(args[1]).empty()) { 
-    client->send_reply("461", ":Not enough parameters");
+    client->SendReply("461", ":Not enough parameters");
     return;
   }
-  if (client->isRegistered()) {
-    client->send_reply("462", ":You may not reregister");
+  if (client->IsRegistered()) {
+    client->SendReply("462", ":You may not reregister");
     return;
   }
-  client->_userName = args[1];
-  std::cout << "_userName: " << client->_userName << std::endl;
-  client->setUserState(true); 
+  client->SetUserName(args[1]);
+  std::cout << "_userName: " << client->GetUserName() << std::endl;
+  client->SetUserState(true); 
   std::cout << GREEN 
     << "[SUCCESS] " << " User  successfully." << std::endl;
-  if (!client->isRegistered())
+  if (!client->IsRegistered())
       checkRegistration(client); 
 }
 

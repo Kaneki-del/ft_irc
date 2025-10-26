@@ -9,45 +9,50 @@ class Client;
 
 class Client {
 public:
-  Client(int fd, Server* serverPtr);
-  std::string _nickName;
-  std::string _userName;
-  std::string _realName;
 
-  void processAndExtractCommands();
-  std::string extractAndEraseFromBuffer(size_t posFound, int delimiterLen);
+  Client(int Fd, Server* ServerPtr);
 
+  void ProcessAndExtractCommands();
+  std::string ExtractAndEraseFromBuffer(size_t PosFound, int DelimiterLen);
 
-  std::string getNickname();
-  bool getPassState();
-  std::string &getReadBuffer();
-  std::string &getOutBuffer();
-  bool isRegistered();
-  bool getUserState();
-  bool getNicknameState();
-  int getFd();
-  const std::string & getIpAddress() const ;
-  Server* getServerPtr() const;
+  const std::string GetNickName() const;
+  bool GetPassState() const;
+  std::string &GetReadBuffer();
+  std::string &GetOutBuffer();
+  bool IsRegistered() const;
+  bool GetUserState() const;
+  bool GetNickNameState() const;
+  int GetFd() const;
+  const std::string GetNickName() ;
+  const std::string GetUserName() const;
+  const std::string & GetIpAddress() const ;
+  Server* GetServerPtr() const;
 
-  void setRegistration();
-  void setPassState(bool state);
-  void setUserState(bool state);
-  void setNickState(bool state);
-  void setPollOut(bool state);
-  void setIpAddress(const std::string &addrr);
+  void SetRegistration();
+  void SetPassState(bool State);
+  void SetUserState(bool State);
+  void SetNickState(bool State);
+  void SetPollOut(bool State);
+  void SetIpAddress(const std::string &Addrr);
+  void SetNickname(const std::string& Nick);
+  void SetUserName(const std::string& User);
 
-  void send_reply(const std::string &numeric, const std::string &content);
-
-
+  void SendReply(const std::string &Numeric, const std::string &Content);
 private:
-  int _fd;
-  std::string _readBuffer;
-  std::string _outBuffer;
-  bool _registered;
-  bool _nickSet;
-  bool _passSet;
-  bool _userSet;
-  std::string _ipAddrres;
-  Server* _serverPtr;
+
+  int _Fd;
+  std::string _ReadBuffer;
+  std::string _OutBuffer;
+
+  std::string _NickName;
+  std::string _UserName;
+  std::string _IpAddrres;
+
+  bool _Registered;
+  bool _NickSet;
+  bool _PassSet;
+  bool _UserSet;
+
+  Server* _ServerPtr;
 };
 #endif

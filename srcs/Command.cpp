@@ -2,11 +2,11 @@
 
 void Server::handlePrivmsgCommand(Client *client, std::vector<std::string>args){
   if (args.size() < 2) { 
-    client->send_reply("411", ":No recipient given (" + args[0] + ")");
+    client->SendReply("411", ":No recipient given (" + args[0] + ")");
     return; 
   }
   if (args.size() < 3) {
-    client->send_reply("412", ":No text to send");
+    client->SendReply("412", ":No text to send");
     return;
   }
   std::string target = args[1];
@@ -20,7 +20,7 @@ void Server::handlePrivmsgCommand(Client *client, std::vector<std::string>args){
     }
     else {
       std::cerr << "[ERROR] Bot not found in map, skipping command dispatch." << std::endl;
-      client->send_reply("401", "bot :No such nick/channel");
+      client->SendReply("401", "bot :No such nick/channel");
       return;
     }
   }
@@ -29,9 +29,9 @@ void Server::handlePrivmsgCommand(Client *client, std::vector<std::string>args){
     std::map<std::string, Client*>::iterator it = _nicknames.find(target);
     if (it != _nicknames.end()) {
       Client *senderClient = it->second; 
-      std::string messageee =  "PRIVMSG " + senderClient->_nickName + " :" + message + "\r\n" ;
+      std::string messageee =  "PRIVMSG " + senderClient->GetNickName() + " :" + message + "\r\n" ;
       std::cout << "outgoing message: " << messageee << std::endl;
-      send(senderClient->getFd(), messageee.c_str(), messageee.length(), 0);
+      send(senderClient->GetFd(), messageee.c_str(), messageee.length(), 0);
       return;
     }
     else

@@ -18,8 +18,8 @@ e_cmd_bot_type getCmdTtype(const std::string & cmdName)
 void HelpCmd(Client *Sendclient, std::vector<std::string> arguments){
   if (arguments.size() > 2)
   {
-    Sendclient->send_reply("NOTICE",
-                           "Syntax Error: Too many arguments for the Bot command. Use help for command list.");
+    // Sendclient->send_reply("NOTICE",
+    //                        "Syntax Error: Too many arguments for the Bot command. Use help for command list.");
     return;
   }
   std::string message;
@@ -35,8 +35,8 @@ void HelpCmd(Client *Sendclient, std::vector<std::string> arguments){
 
   for (size_t i = 0; i < help_messages.size(); i++)
   {
-      message =  "PRIVMSG " + Sendclient->_nickName + " :" + help_messages[i] + "\r\n" ;
-      send(Sendclient->getFd(), message.c_str(), message.length(), 0);
+      message =  "PRIVMSG " + Sendclient->GetNickName() + " :" + help_messages[i] + "\r\n" ;
+      send(Sendclient->GetFd(), message.c_str(), message.length(), 0);
   }
 
 }
@@ -45,8 +45,8 @@ void timeCmd(Client *Sendclient, std::vector<std::string> arguments){
   if (arguments.size() > 1)
   {
     std::string buffer = "Syntax Error: Too many arguments for the Bot command. Use help for command list.";
-    std::string messages =  "PRIVMSG " + Sendclient->_nickName + " :" + buffer + "\r\n" ;
-    send(Sendclient->getFd(), messages.c_str(), messages.length(), 0);
+    std::string messages =  "PRIVMSG " + Sendclient->GetNickName() + " :" + buffer + "\r\n" ;
+    send(Sendclient->GetFd(), messages.c_str(), messages.length(), 0);
     return;
   }
   std::string message;
@@ -60,9 +60,9 @@ void timeCmd(Client *Sendclient, std::vector<std::string> arguments){
                       TimeInfo);
   if (len > 0)
   {
-    message =  "PRIVMSG " + Sendclient->_nickName + " :" + TimeBuffer + "\r\n" ;
+    message =  "PRIVMSG " + Sendclient->GetNickName() + " :" + TimeBuffer + "\r\n" ;
     std::cout << "message from the bot: " << message << std::endl;
-    send(Sendclient->getFd(), message.c_str(), message.length(), 0);
+    send(Sendclient->GetFd(), message.c_str(), message.length(), 0);
 
   }
 }
@@ -71,12 +71,12 @@ void UpTimeCmd(Client *Sendclient, std::vector<std::string> arguments){
   if (arguments.size() > 1)
   {
     std::string buffer = "Syntax Error: Too many arguments for the Bot command. Use help for command list.";
-    std::string messages =  "PRIVMSG " + Sendclient->_nickName + " :" + buffer + "\r\n" ;
-    send(Sendclient->getFd(), messages.c_str(), messages.length(), 0);
+    std::string messages =  "PRIVMSG " + Sendclient->GetNickName() + " :" + buffer + "\r\n" ;
+    send(Sendclient->GetFd(), messages.c_str(), messages.length(), 0);
     return;
   }
   time_t current_time = time(NULL);
-  time_t start_time = Sendclient->getServerPtr()->getStartTime();
+  time_t start_time = Sendclient->GetServerPtr()->getStartTime();
   time_t uptime_seconds = current_time - start_time;
   if (uptime_seconds < 0) {
         return;
@@ -94,9 +94,9 @@ std::stringstream ss;
     ss << minutes << " minute" << (minutes != 1 ? "s" : "") << ", ";
     ss << seconds << " second" << (seconds != 1 ? "s" : "") << ".";
     std::string RespodMessage = ss.str();
-  std::string message =  "PRIVMSG " + Sendclient->_nickName + " :" + RespodMessage + "\r\n" ;
+  std::string message =  "PRIVMSG " + Sendclient->GetNickName() + " :" + RespodMessage + "\r\n" ;
     std::cout << "message from the bot: " << message << std::endl;
-    send(Sendclient->getFd(), message.c_str(), message.length(), 0);
+    send(Sendclient->GetFd(), message.c_str(), message.length(), 0);
 }
 
 void processBotCommand(Client * client, std::string & message){
@@ -111,8 +111,8 @@ void processBotCommand(Client * client, std::string & message){
   else if (splitedCommand.size() > 3)
   {
     std::string buffer = "Syntax Error: Too many arguments for the Bot command. Use help for command list.";
-    std::string messages =  "PRIVMSG " + client->_nickName + " :" + buffer + "\r\n" ;
-    send(client->getFd(), messages.c_str(), messages.length(), 0);
+    std::string messages =  "PRIVMSG " + client->GetNickName() + " :" + buffer + "\r\n" ;
+    send(client->GetFd(), messages.c_str(), messages.length(), 0);
     return;
   }
 

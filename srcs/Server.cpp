@@ -58,10 +58,10 @@ Server::Server(const int port, const std::string password)
 void Server::initialBot(){
     Client * bot = new Client(-1, this);
     _clients[-1] = bot;
-    bot->_nickName = BOT_NAME;
-    bot->_userName = "BotUser"; 
-    bot->setIpAddress("127.0.0.1");
-    bot->setRegistration();
+    bot->SetNickname(BOT_NAME) ;
+    bot->SetUserName("BotUser"); 
+    bot->SetIpAddress("127.0.0.1");
+    bot->SetRegistration();
     _nicknames[BOT_NAME] = bot;
     std::cerr << "[BOT] Initialized as " << BOT_NAME << "!" << std::endl;
 }
@@ -84,15 +84,15 @@ e_cmd_type Server::getCommandType(std::string command) {
 bool Server::handleOutgoingData(int clientFd){
 
     Client* client = _clients[clientFd];
-    std::string& buffer = client->getOutBuffer();
+    std::string& buffer = client->GetOutBuffer();
     const char* data_ptr = buffer.c_str(); 
     size_t length = buffer.length();
 
-    ssize_t bytes_sent = send(client->getFd(), data_ptr, length, 0);
+    ssize_t bytes_sent = send(client->GetFd(), data_ptr, length, 0);
     if (bytes_sent > 0) {
         buffer.erase(0, bytes_sent);
         if (buffer.empty()) {
-            client->setPollOut(false); 
+            client->SetPollOut(false); 
         }
     } else if (bytes_sent < 0) {
         if (errno != EWOULDBLOCK && errno != EAGAIN) {
@@ -103,13 +103,13 @@ bool Server::handleOutgoingData(int clientFd){
 }
 
 void Server::checkRegistration(Client * client){
-    if (client->getPassState() && client->getUserState() && client->getNicknameState())
+    if (client->GetPassState() && client->GetUserState() && client->GetNickNameState())
     {
-        std::string identity = client->_nickName + "!" + client->_userName +
-            "@" + client->getIpAddress(); 
+        std::string identity = client->GetNickName() + "!" + client->GetUserName() +
+            "@" + client->GetIpAddress(); 
         std::string welcome_content = ":Welcome to the ft_irc.local Network, " + identity;
-        client->send_reply("001", welcome_content);
-        client->setRegistration();
+        client->SendReply("001", welcome_content);
+        client->SetRegistration();
     }
 }
 
@@ -127,7 +127,7 @@ void Server::handleNewConnection() {
     if (ip_temp_ptr) {
         // 2. CRITICAL STEP: Store the IP address in the Client object.
         // We pass the string to the Client setter, which copies the data.
-        _clients[new_client_fd]->setIpAddress(std::string(ip_temp_ptr));
+        _clients[new_client_fd]->SetIpAddress(std::string(ip_temp_ptr));
 
         // The IP address is now safely stored inside Client::ip_address.
     } else {
@@ -175,8 +175,8 @@ bool Server::handleClientCommand(const int current_fd) {
     }
     else {
         temp_buffer[bytes_read] = '\0';
-        client->getReadBuffer().append(temp_buffer, bytes_read);
-        client->processAndExtractCommands();
+        client->GetReadBuffer().append(temp_buffer, bytes_read);
+        client->ProcessAndExtractCommands();
     return false;
     }
 }
@@ -218,12 +218,12 @@ void Server::commandDispatcher(Client *client, std::string commandLine) {
     std::string command = splitedCommand[0];
     e_cmd_type cmd = this->getCommandType(command);
     if (cmd == CMD_UNKNOWN){
-            client->send_reply("421" , command + " :Unknown command");
+            client->SendReply("421" , command + " :Unknown command");
             return;
     }
     if (cmd != CMD_PASS && cmd != CMD_NICK && cmd != CMD_USER) {
-        if (!client->isRegistered()) {
-            client->send_reply("451",":You have not registered");
+        if (!client->IsRegistered()) {
+            client->SendReply("451",":You have not registered");
             return; 
         }
     }
@@ -251,9 +251,9 @@ void Server::disconnectClient(int current_fd) {
     //TODO see if i need to protect this
     std::cerr << RED
         << "[DISCONNECT] Client disconnected."
-        << " Nickname: " << (clientToDelete->_nickName.empty() ? "(Unregistered)" 
-        : clientToDelete->_nickName) << " | FD: " << current_fd << std::endl;
-    _nicknames.erase(clientToDelete->getNickname());
+        << " Nickname: " << (clientToDelete->GetNickName().empty() ? "(Unregistered)" 
+        : clientToDelete->GetNickName()) << " | FD: " << current_fd << std::endl;
+    _nicknames.erase(clientToDelete->GetNickName());
     close(current_fd);
     delete clientToDelete;
     _clients.erase(current_fd);
