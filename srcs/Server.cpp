@@ -48,23 +48,23 @@ Server::Server(const int port, const std::string password)
     listener_poll_fd.revents = 0;
     _pollFds.push_back(listener_poll_fd);
     // create the client for the bot 
-    initialBot();
+    // initialBot();
 
     std::cerr << GREEN
               << "[SERVER START] Operational on port " << _port 
               << ". Waiting for connections..." << std::endl;
 }
 
-void Server::initialBot(){
-    Client * bot = new Client(-1, this);
-    _clients[-1] = bot;
-    bot->SetNickname(BOT_NAME) ;
-    bot->SetUserName("BotUser"); 
-    bot->SetIpAddress("127.0.0.1");
-    bot->SetRegistration();
-    _nicknames[BOT_NAME] = bot;
-    std::cerr << "[BOT] Initialized as " << BOT_NAME << "!" << std::endl;
-}
+// void Server::initialBot(){
+//     Client * bot = new Client(-1, this);
+//     _clients[-1] = bot;
+//     bot->SetNickname(BOT_NAME) ;
+//     bot->SetUserName("BotUser"); 
+//     bot->SetIpAddress("127.0.0.1");
+//     bot->SetRegistration();
+//     _nicknames[BOT_NAME] = bot;
+//     std::cerr << "[BOT] Initialized as " << BOT_NAME << "!" << std::endl;
+// }
 
 std::map<std::string, Client *> Server::GetNickNames() const{
     return _nicknames;

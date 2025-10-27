@@ -14,8 +14,7 @@ enum e_cmd_type {
 enum e_cmd_bot_type {
     BOT_CMD_HELP    = 0, // Displays available commands
     BOT_CMD_TIME    = 1, // Displays the server time
-    BOT_CMD_UPTIME  = 2, // Displays how long the server has been running
-    BOT_CMD_PING  = 3, // Displays how long the server has been running
+    BOT_CMD_JOKE  = 2, 
     BOT_CMD_UNKNOWN = 4, // Mandatory default for unrecognized commands
 };
 

@@ -3,7 +3,7 @@
 
 #define GREEN    "\x1b[32m" 
 #define RED      "\x1b[31m"
-#define BOT_NAME "bot"
+#define BOT_NAME "FTBot"
 
 #include <cerrno>
 #include <cstdlib>
@@ -39,7 +39,7 @@ public:
   std::vector<struct pollfd> & getPollfds();
   void disconnectClient(int currentFd);
   void handlePrivmsgCommand(Client *client, std::vector<std::string>args); 
-  void initialBot();
+  // void initialBot();
   time_t getStartTime() const ;
   std::map<std::string, Client *> GetNickNames() const;
 

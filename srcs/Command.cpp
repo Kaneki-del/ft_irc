@@ -15,8 +15,11 @@ void Server::handlePrivmsgCommand(Client *client, std::vector<std::string>args){
   {
     std::map<std::string, Client*>::iterator it = _nicknames.find(BOT_NAME);
     if (it != _nicknames.end()) {
-      processBotCommand(client, message); 
-      return;
+      std::string botMessage = client->GetNickName() + " " + message + "\r\n";
+      if (send(it->second->GetFd(), botMessage.c_str(), botMessage.length(), 0) == -1){
+        throw std::runtime_error("Bot connection failed during send.");
+        return;
+      }
     }
     else {
       std::cerr << "[ERROR] Bot not found in map, skipping command dispatch." << std::endl;
