@@ -189,8 +189,6 @@ void start_bot_loop(int bot_fd, const std::string& password) {
 		    throw std::runtime_error(strerror(errno));
 	    }
         bot_in_buffer.append(buff, readed_count);
-        
-        // 4. Message Framing Loop (THE SOLUTION)
         size_t pos;
         while ((pos = bot_in_buffer.find("\r\n")) != std::string::npos) {
             
